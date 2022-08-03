@@ -1,8 +1,8 @@
 /**
- * <image-comparison> is a web component which enables
- * users to switch between themes.
+ * <image-comparison> 
+ * Compare two images using a slider, an overlay, or a side by side view
  *
- * Copyright © 2021 Tony Spegel
+ * Copyright © 2022 Tony Spegel
  */
 
 import { html, css, LitElement, TemplateResult } from 'lit';
@@ -27,14 +27,30 @@ export class ImageComparison extends LitElement {
       box-sizing: border-box;
     }
 
+    // <image-comparison variant="split">
     :host([variant='split']) #image-container {
-      gap: var(--base-gap);
-      display: grid;
+      gap: var(--split-gap);
       grid-template-columns: 1fr 1fr;
     }
 
+    // <image-comparison variant="overlay">
     :host([variant='overlay']) #image-container {
       cursor: pointer;
+    }
+
+    :host([variant='overlay']) ::slotted(img) {
+      grid-area: images;
+    }
+
+    #image-container {
+      display: grid;
+      grid-template-areas: 'images';
+      position: relative;
+      overflow: hidden;
+    }
+
+    #image-container.pressed ::slotted(*:last-child) {
+      order: -1;
     }
 
     button {
@@ -70,17 +86,6 @@ export class ImageComparison extends LitElement {
 
     button:after {
       top: calc(var(--thumb-size) - var(--thumb-border-width));
-    }
-
-    #image-container {
-      display: grid;
-      grid-template-areas: 'images';
-      position: relative;
-      overflow: hidden;
-    }
-
-    #image-container.pressed ::slotted(*:last-child) {
-      order: -1;
     }
 
     #one {

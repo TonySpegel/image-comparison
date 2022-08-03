@@ -1,6 +1,6 @@
 {
   "name": "image-comparison-component",
-  "description": "Webcomponent image-comparison following open-wc recommendations",
+  "description": "Compare two images using a slider, an overlay, or a side by side view",
   "license": "MIT",
   "version": "0.0.0",
   "author": "Tony Spegel",
