@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo</title>
+    <style>
+      :where(img, svg, video, canvas, audio, iframe, embed, object) {
+        display: block;
+      }
+      :where(img, svg, video) {
+        block-size: auto;
+        max-inline-size: 100%;
+      }
+
+      body {
+        background: #fafafa;
+      }
+
+      image-comparison {
+        width: 500px;
+      }
+
+      #image-container {
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+      }
+
+      #one {
+        will-change: clip;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        pointer-events: none;
+        overflow: hidden;
+        clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
+      }
+
+      #two {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+    <div id="image-container">
+      <div id="one">
+        <img src="../assets/kasimir.jpg" alt="kasimir" />
+      </div>
+      <div id="two">
+        <img src="../assets/kasimir_filter.jpg" alt="kasimir_filter" />
+      </div>
+    </div>
+  -->
+    <div id="demo"></div>
+
+    <script type="module">
+      import { html, render } from 'lit';
+      import '../dist/src/image-comparison.js';
+
+      render(
+        html` <image-comparison variant="slider">
+          <img slot="img-slide-1" src="../assets/kasimir.jpg" alt="kasimir" />
+          <img
+            slot="img-slide-2"
+            src="../assets/kasimir_filter.jpg"
+            alt="kasimir with filter applied"
+          />
+        </image-comparison>`,
+        document.querySelector('#demo')
+      );
+    </script>
+  </body>
+</html>
