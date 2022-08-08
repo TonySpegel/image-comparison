@@ -4,47 +4,76 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Demo</title>
+    <meta name="author" content="Tony Spegel" />
+
+    <title>&lt/image-comparison> Demo</title>
     <style>
+      :where(html) {
+        --base-gap: 16px;
+      }
+
       :where(img, svg, video, canvas, audio, iframe, embed, object) {
         display: block;
       }
+
       :where(img, svg, video) {
         block-size: auto;
         max-inline-size: 100%;
       }
 
       body {
-        background: #fafafa;
+        font-family: sans-serif;
+      }
+
+      fieldset {
+        border: none;
+        margin: var(--base-gap) auto;
+        width: -moz-fit-content;
+        width: fit-content;
+        text-align: center;
+      }
+
+      input[type='radio'],
+      input[type='radio'] + label {
+        cursor: pointer;
       }
 
       image-comparison {
+        margin: 0 auto;
+        max-width: 100%;
         width: 500px;
-      }
-
-      #image-container {
-        position: relative;
-        cursor: pointer;
-        overflow: hidden;
-      }
-
-      #one {
-        will-change: clip;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 2;
-        pointer-events: none;
-        overflow: hidden;
-        clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
-      }
-
-      #two {
-        pointer-events: none;
       }
     </style>
   </head>
   <body>
+    <fieldset>
+      <legend>Select a variant for &lt/image-comparison></legend>
+      <input
+        checked
+        id="variant-slider"
+        name="image-comparison-variants"
+        type="radio"
+        value="slider"
+      />
+      <label for="variant-slider">Slider</label>
+
+      <input
+        id="variant-split"
+        name="image-comparison-variants"
+        type="radio"
+        value="split"
+      />
+      <label for="variant-split">Split view</label>
+
+      <input
+        id="variant-overlay"
+        name="image-comparison-variants"
+        type="radio"
+        value="overlay"
+      />
+      <label for="variant-overlay">Overlay</label>
+    </fieldset>
+
     <div id="demo"></div>
 
     <script type="module">
@@ -62,6 +91,21 @@
         </image-comparison>`,
         document.querySelector('#demo')
       );
+
+      const radioButtonVariants = document.querySelectorAll(
+        'input[type="radio"]'
+      );
+
+      const imageComparisonComponent =
+        document.querySelector('image-comparison');
+
+      radioButtonVariants.forEach(rbVariant => {
+        rbVariant.addEventListener('click', e => {
+          const { value } = e.target;
+
+          imageComparisonComponent.setAttribute('variant', value);
+        });
+      });
     </script>
   </body>
 </html>
