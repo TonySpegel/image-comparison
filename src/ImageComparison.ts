@@ -1,118 +1,113 @@
 /**
- * <image-comparison> 
+ * <image-comparison>
  * Compare two images using a slider, an overlay, or a side by side view
  *
  * Copyright © 2022 Tony Spegel
  */
 
-import { html, css, LitElement, TemplateResult } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import type { CSSResultGroup } from 'lit';
+
 import { choose } from 'lit/directives/choose.js';
+import { html, LitElement, TemplateResult } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
+import styles from './ImageComparison.styles';
 
 type Variants = 'overlay' | 'slider' | 'split';
 
+const clipPath = (
+  xPosValue: number | string,
+  xPosUnit: string = '%'
+): string => {
+  const xPos = `${xPosValue}${xPosUnit}`;
+  return `clip-path: polygon(${xPos} 0%, 100% 0%, 100% 100%, ${xPos} 100%);`;
+};
+
 export class ImageComparison extends LitElement {
-  static styles = css`
-    :host {
-      --base-gap: 16px;
-      --split-gap: var(--base-gap);
+  static styles: CSSResultGroup = styles;
 
-      --thumb-size: 40px;
-      --thumb-border-width: 3px;
-      --bar-width: 2px;
-      --slider-color: white;
+  private imageContainerWidth: number = 0;
 
-      display: block;
-      padding: var(--base-gap);
-      box-sizing: border-box;
-    }
-
-    // <image-comparison variant="split">
-    :host([variant='split']) #image-container {
-      gap: var(--split-gap);
-      grid-template-columns: 1fr 1fr;
-    }
-
-    // <image-comparison variant="overlay">
-    :host([variant='overlay']) #image-container {
-      cursor: pointer;
-    }
-
-    :host([variant='overlay']) ::slotted(img) {
-      grid-area: images;
-    }
-
-    #image-container {
-      display: grid;
-      grid-template-areas: 'images';
-      position: relative;
-      overflow: hidden;
-    }
-
-    #image-container.pressed ::slotted(*:last-child) {
-      order: -1;
-    }
-
-    button {
-      border: var(--thumb-border-width) solid var(--slider-color);
-      border-radius: 50%;
-      width: var(--thumb-size);
-      aspect-ratio: 1;
-
-      place-self: center;
-      background-color: transparent;
-      grid-area: images;
-      z-index: 3;
-      cursor: col-resize;
-      position: relative;
-    }
-
-    button:before,
-    button:after {
-      content: '';
-      width: var(--bar-width);
-      left: calc(50% - calc(var(--bar-width) / 2));
-      background-color: var(--slider-color);
-      position: absolute;
-      height: 100vh;
-      z-index: -1;
-    }
-
-    button:before {
-      bottom: calc(
-        50% + calc(var(--thumb-size) / 2) - calc(var(--thumb-border-width) / 2)
-      );
-    }
-
-    button:after {
-      top: calc(var(--thumb-size) - var(--thumb-border-width));
-    }
-
-    #one {
-      will-change: clip;
-      z-index: 2;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    #one,
-    #two {
-      grid-area: images;
-      background-color: red;
-    }
-  `;
+  private imageContainerLeft: number = 0;
 
   @state()
   pressed = false;
 
   @state()
-  x = 50;
+  sliderPosition: number | string = 'calc(50% - calc(var(--thumb-size) / 2))';
 
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   variant: Variants = 'overlay';
 
   @property({ type: String })
   overlayPrompt = 'Tap and hold to compare';
+
+  @property({ type: String })
+  sliderPrompt = 'Move to compare';
+
+  @query('#image-container')
+  private imageContainer!: HTMLDivElement;
+
+  @state()
+  private overlay = clipPath('50', '%');
+
+  @state()
+  slidingActive = false;
+
+  getHorizontalCursorPosition(event: MouseEvent): number {
+    // the relative x position to your window
+    return event.pageX - this.imageContainerLeft - window.scrollX;
+  }
+
+  finishSliding() {
+    this.slidingActive = false;
+  }
+
+  slideCompare(event: MouseEvent) {
+    if (this.slidingActive === false) return false;
+
+    let pos = this.getHorizontalCursorPosition(event);
+
+    if (pos < 0) pos = 0;
+    if (pos > this.imageContainerWidth) pos = this.imageContainerWidth;
+
+    this.sliderPosition = `calc(${pos}px - calc(var(--thumb-size) / 2))`;
+    this.overlay = clipPath(pos, 'px');
+  }
+
+  setPressed(val: boolean) {
+    this.pressed = val;
+  }
+
+  constructor() {
+    super();
+
+    this.finishSliding = this.finishSliding.bind(this);
+    this.slideCompare = this.slideCompare.bind(this);
+  }
+
+  firstUpdated() {
+    const { left, width } = this.imageContainer.getBoundingClientRect();
+
+    this.imageContainerWidth = width;
+    this.imageContainerLeft = left;
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    window.addEventListener('mousemove', event => this.slideCompare(event));
+    window.addEventListener('mouseup', () => this.finishSliding());
+  }
+
+  /**
+   * Clean up EventListeners
+   */
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    window.removeEventListener('mousemove', this.slideCompare);
+    window.removeEventListener('mouseup', this.finishSliding);
+  }
 
   render() {
     /**
@@ -123,8 +118,8 @@ export class ImageComparison extends LitElement {
      */
     const overlayTemplate = html`
       <div
-        @mousedown=${() => (this.pressed = true)}
-        @mouseup=${() => (this.pressed = false)}
+        @mousedown=${() => this.setPressed(true)}
+        @mouseup=${() => this.setPressed(false)}
         @touchstart=${(event: Event) => {
           event.preventDefault();
           this.pressed = true;
@@ -137,16 +132,17 @@ export class ImageComparison extends LitElement {
         id="image-container"
         class="${this.pressed ? 'pressed' : ''}"
       >
-        <slot name="img-slide-1"></slot>
         <slot name="img-slide-2"></slot>
+        <slot name="img-slide-1"></slot>
       </div>
       <slot name="prompt"></slot>
     `;
     /**
      * Split view
-     * ┌────┬────┐
-     * │    │    │
-     * └────┴────┘
+     * ┌────┐┌────┐    ┌────┬────┐
+     * │    ││    │ || │    │    │
+     * └────┘└────┘    └────┴────┘
+     * ^ --split-gap
      */
     const splitTemplate = html`
       <div id="image-container">
@@ -159,38 +155,23 @@ export class ImageComparison extends LitElement {
      * ┌───┬─────┐
      * │  <│>    │
      * └───┴─────┘
+     aria-valuenow=${this.sliderPosition}
      */
     const sliderTemplate = html`
-      <div>
-        <div id="image-container">
-          <div
-            id="one"
-            style="clip-path: polygon(${this.x}% 0%, 100% 0%, 100% 100%, ${this
-              .x}% 100%);"
-          >
-            <slot name="img-slide-1"></slot>
-          </div>
-          <div id="two">
-            <slot name="img-slide-2"></slot>
-          </div>
-          <button
-            @mousemove=${(e: Event) => {
-              console.log(e);
-            }}
-            style="transform: translateX(${this.x}%)"
-          ></button>
+      <div id="image-container" role="separator">
+        <div id="one" style="${this.overlay}">
+          <slot name="img-slide-2"></slot>
         </div>
-
-        <input
-          @input=${(e: Event) => {
-            const sliderValue = (e.target as HTMLInputElement).value;
-            this.x = parseInt(sliderValue);
+        <div id="two">
+          <slot name="img-slide-1"></slot>
+        </div>
+        <button
+          @mousedown=${() => {
+            this.slidingActive = true;
           }}
-          type="range"
-          min="0"
-          max="100"
-          value="50"
-        />
+          @mousemove=${(e: MouseEvent) => this.slideCompare(e)}
+          style="left: ${this.sliderPosition}"
+        ></button>
       </div>
     `;
 
