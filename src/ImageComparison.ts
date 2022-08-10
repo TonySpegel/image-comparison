@@ -160,6 +160,34 @@ export class ImageComparison extends LitElement {
 
   render() {
     /**
+     * Slider
+     * ┌───┬─────┐
+     * │  <│>    │
+     * └───┴─────┘
+     */
+    const sliderTemplate = html`
+      <div id="image-container" role="separator" title=${this.sliderPrompt}>
+        <div id="one" style="${this.overlay}">
+          <slot name="img-slide-2"></slot>
+        </div>
+        <div id="two">
+          <slot name="img-slide-1"></slot>
+        </div>
+        <button
+          @mousedown=${() => {
+            this.setSlidingState(true);
+          }}
+          @mousemove=${(e: MouseEvent) => this.slideCompareHandler(e)}
+          @touchstart=${(event: TouchEvent) => {
+            event.preventDefault();
+            this.setSlidingState(true);
+          }}
+          @touchmove=${(e: TouchEvent) => this.slideCompareHandler(e)}
+          style="left: ${this.sliderPosition}"
+        ></button>
+      </div>
+    `;
+    /**
      * Overlay
      * ┌────┐
      * │    │
@@ -197,34 +225,6 @@ export class ImageComparison extends LitElement {
       <div id="image-container">
         <slot name="img-slide-1"></slot>
         <slot name="img-slide-2"></slot>
-      </div>
-    `;
-    /**
-     * Slider
-     * ┌───┬─────┐
-     * │  <│>    │
-     * └───┴─────┘
-     */
-    const sliderTemplate = html`
-      <div id="image-container" role="separator" title=${this.sliderPrompt}>
-        <div id="one" style="${this.overlay}">
-          <slot name="img-slide-2"></slot>
-        </div>
-        <div id="two">
-          <slot name="img-slide-1"></slot>
-        </div>
-        <button
-          @mousedown=${() => {
-            this.setSlidingState(true);
-          }}
-          @mousemove=${(e: MouseEvent) => this.slideCompareHandler(e)}
-          @touchstart=${(event: TouchEvent) => {
-            event.preventDefault();
-            this.setSlidingState(true);
-          }}
-          @touchmove=${(e: TouchEvent) => this.slideCompareHandler(e)}
-          style="left: ${this.sliderPosition}"
-        ></button>
       </div>
     `;
 
