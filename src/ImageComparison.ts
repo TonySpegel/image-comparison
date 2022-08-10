@@ -45,13 +45,17 @@ export class ImageComparison extends LitElement {
   private overlay: string = dynamicOverlayClipPath(50, '%');
 
   @state()
-  private slidingActive = false;
+  slidingActive = false;
 
   @state()
   private pressed = false;
 
   @state()
   private sliderPosition: string = 'calc(50% - calc(var(--thumb-size) / 2))';
+
+  private setPressed(val: boolean): void {
+    this.pressed = val;
+  }
 
   private getHorizontalCursorPosition(
     dragEvent: MouseEvent | TouchEvent
@@ -68,59 +72,81 @@ export class ImageComparison extends LitElement {
     );
   }
 
-  private finishSliding(): void {
-    this.slidingActive = false;
+  private slideCompare(event: MouseEvent | TouchEvent): void {
+    if (this.slidingActive) {
+      let pos = this.getHorizontalCursorPosition(event);
+
+      if (pos < 0) pos = 0;
+      if (pos > this.imageContainerWidth) pos = this.imageContainerWidth;
+
+      this.sliderPosition = `calc(${pos}px - calc(var(--thumb-size) / 2))`;
+      this.overlay = dynamicOverlayClipPath(pos, 'px');
+    }
   }
 
-  private slideCompare(event: MouseEvent | TouchEvent): false | null {
-    if (this.slidingActive === false) return false;
-
-    let pos = this.getHorizontalCursorPosition(event);
-
-    if (pos < 0) pos = 0;
-    if (pos > this.imageContainerWidth) pos = this.imageContainerWidth;
-
-    this.sliderPosition = `calc(${pos}px - calc(var(--thumb-size) / 2))`;
-    this.overlay = dynamicOverlayClipPath(pos, 'px');
-
-    return null;
+  private setSlidingState(val: boolean): void {
+    this.slidingActive = val;
   }
 
-  private setPressed(val: boolean): void {
-    this.pressed = val;
+  private slideCompareHandler = (event: MouseEvent | TouchEvent): void =>
+    this.slideCompare(event);
+
+  private slideEndHandler = (): void => this.setSlidingState(false);
+
+  /**
+   * Slider EventListener are added when 'variant' is set to 'slider'
+   */
+  private addSliderEventListener(): void {
+    if (this.variant === 'slider') {
+      // Moving the slider
+      window.addEventListener('mousemove', this.slideCompareHandler);
+      window.addEventListener('touchmove', this.slideCompareHandler);
+      // Stop moving the slider
+      window.addEventListener('mouseup', this.slideEndHandler);
+      window.addEventListener('touchend', this.slideEndHandler);
+    }
+  }
+
+  /**
+   * Slider EventListener are removed when the element is removed from the DOM
+   */
+  private removeSliderEventListener(): void {
+    // Moving the slider
+    window.removeEventListener('mousemove', this.slideCompareHandler);
+    window.removeEventListener('touchmove', this.slideCompareHandler);
+    // End sliding
+    window.removeEventListener('mouseup', this.slideEndHandler);
+    window.removeEventListener('touchend', this.slideEndHandler);
   }
 
   constructor() {
     super();
 
-    this.finishSliding = this.finishSliding.bind(this);
-    this.slideCompare = this.slideCompare.bind(this);
+    this.slideCompareHandler = this.slideCompareHandler.bind(this);
+    this.slideEndHandler = this.slideEndHandler.bind(this);
   }
 
-  firstUpdated(): void {
-    /**
-     * Extract the left and width value of imageContainer
-     */
-    if (this.variant === 'slider') {
-      const { left, width } = this.imageContainer.getBoundingClientRect();
-      this.imageContainerLeft = left;
-      this.imageContainerWidth = width;
+  /**
+   * Because slider EventListener are only added when the
+   * 'variant' attribute is set to 'slider',
+   * you also have to react to changes of it when it later takes this value
+   */
+  override attributeChangedCallback(
+    name: string = 'variant',
+    oldVal: string | null,
+    newVal: Variants
+  ) {
+    super.attributeChangedCallback(name, oldVal, newVal);
+
+    if (name === 'variant' && newVal !== oldVal && newVal === 'slider') {
+      this.addSliderEventListener();
     }
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
 
-    window.addEventListener('mousemove', event => {
-      this.slideCompare(event);
-    });
-
-    window.addEventListener('touchmove', event => {
-      this.slideCompare(event);
-    });
-
-    window.addEventListener('mouseup', () => this.finishSliding());
-    window.addEventListener('touchend', () => this.finishSliding());
+    this.addSliderEventListener();
   }
 
   /**
@@ -129,8 +155,7 @@ export class ImageComparison extends LitElement {
   override disconnectedCallback(): void {
     super.disconnectedCallback();
 
-    window.removeEventListener('mousemove', this.slideCompare);
-    window.removeEventListener('mouseup', this.finishSliding);
+    this.removeSliderEventListener();
   }
 
   render() {
@@ -190,14 +215,14 @@ export class ImageComparison extends LitElement {
         </div>
         <button
           @mousedown=${() => {
-            this.slidingActive = true;
+            this.setSlidingState(true);
           }}
-          @mousemove=${(e: MouseEvent) => this.slideCompare(e)}
+          @mousemove=${(e: MouseEvent) => this.slideCompareHandler(e)}
           @touchstart=${(event: TouchEvent) => {
             event.preventDefault();
-            this.slidingActive = true;
+            this.setSlidingState(true);
           }}
-          @touchmove=${(e: TouchEvent) => this.slideCompare(e)}
+          @touchmove=${(e: TouchEvent) => this.slideCompareHandler(e)}
           style="left: ${this.sliderPosition}"
         ></button>
       </div>
@@ -210,5 +235,19 @@ export class ImageComparison extends LitElement {
         ['split', () => splitTemplate],
       ])}
     `;
+  }
+
+  /**
+   * Called after the component's DOM has been updated the first time,
+   * immediately before updated() is called. Best for performing
+   * one-time work after the component's DOM has been created.
+   */
+  firstUpdated(): void {
+    /**
+     * Extract the left and width value of imageContainer
+     */
+    const { left, width } = this.imageContainer.getBoundingClientRect();
+    this.imageContainerLeft = left;
+    this.imageContainerWidth = width;
   }
 }
