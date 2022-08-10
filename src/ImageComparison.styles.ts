@@ -41,7 +41,6 @@ export default css`
     grid-area: images;
   }
 
-
   #image-container {
     display: grid;
     grid-template-areas: 'images';

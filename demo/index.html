@@ -6,8 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Tony Spegel" />
 
-    <title>&lt/image-comparison> Demo</title>
+    <title>&ltimage-comparison/> Demo</title>
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        line-height: calc(0.25rem + 1em + 0.25rem);
+      }
+
+      *,
+      ::before,
+      ::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        block-size: 100%;
+        margin: var(--base-gap);
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
       :where(html) {
         --base-gap: 16px;
       }
@@ -23,19 +44,28 @@
 
       body {
         font-family: sans-serif;
+        text-align: center;
       }
 
       fieldset {
         border: none;
-        margin: var(--base-gap) auto;
+        margin: calc(var(--base-gap) * 2) auto var(--base-gap);
         width: -moz-fit-content;
         width: fit-content;
         text-align: center;
       }
 
+      #radio-wrapper-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--base-gap);
+      }
+
       input[type='radio'],
       input[type='radio'] + label {
         cursor: pointer;
+        margin: 0;
       }
 
       image-comparison {
@@ -43,54 +73,78 @@
         max-width: 100%;
         width: 500px;
       }
+
+      #copyright-notice {
+        position: fixed;
+        bottom: var(--base-gap);
+        left: 0;
+        right: 0;
+      }
     </style>
   </head>
   <body>
+    <h1>&ltimage-comparison></h1>
+    <span role="doc-subtitle"
+      >Compare two images using a slider, an overlay, or a split view</span
+    >
+
     <fieldset>
-      <legend>Select a variant for &lt/image-comparison></legend>
-      <input
-        checked
-        id="variant-slider"
-        name="image-comparison-variants"
-        type="radio"
-        value="slider"
-      />
-      <label for="variant-slider">Slider</label>
+      <legend>Select a variant</legend>
 
-      <input
-        id="variant-split"
-        name="image-comparison-variants"
-        type="radio"
-        value="split"
-      />
-      <label for="variant-split">Split view</label>
+      <div id="radio-wrapper-container">
+        <div>
+          <input
+            checked
+            id="variant-slider"
+            name="image-comparison-variants"
+            type="radio"
+            value="slider"
+          />
+          <label for="variant-slider">Slider</label>
+        </div>
 
-      <input
-        id="variant-overlay"
-        name="image-comparison-variants"
-        type="radio"
-        value="overlay"
-      />
-      <label for="variant-overlay">Overlay</label>
+        <div>
+          <input
+            id="variant-overlay"
+            name="image-comparison-variants"
+            type="radio"
+            value="overlay"
+          />
+          <label for="variant-overlay">Overlay</label>
+        </div>
+
+        <div>
+          <input
+            id="variant-split"
+            name="image-comparison-variants"
+            type="radio"
+            value="split"
+          />
+          <label for="variant-split">Split view</label>
+        </div>
+      </div>
     </fieldset>
 
     <div id="demo"></div>
+
+    <span id="copyright-notice">© 2022 Tony Spegel</span>
 
     <script type="module">
       import { html, render } from 'lit';
       import '../dist/src/image-comparison.js';
 
-      render(
-        html` <image-comparison variant="slider">
+      const imageComparisonTemplate = html`
+        <image-comparison variant="slider">
           <img slot="img-slide-1" src="../assets/kasimir.jpg" alt="kasimir" />
           <img
             slot="img-slide-2"
             src="../assets/kasimir_filter.jpg"
             alt="kasimir with filter applied"
           />
-        </image-comparison>`,
-        document.querySelector('#demo')
-      );
+        </image-comparison>
+      `;
+
+      render(imageComparisonTemplate, document.querySelector('#demo'));
 
       const radioButtonVariants = document.querySelectorAll(
         'input[type="radio"]'

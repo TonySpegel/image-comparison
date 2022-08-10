@@ -14,8 +14,8 @@ import styles from './ImageComparison.styles';
 
 type Variants = 'overlay' | 'slider' | 'split';
 
-const clipPath = (
-  xPosValue: number | string,
+const dynamicOverlayClipPath = (
+  xPosValue: number,
   xPosUnit: string = '%'
 ): string => {
   const xPos = `${xPosValue}${xPosUnit}`;
@@ -29,40 +29,50 @@ export class ImageComparison extends LitElement {
 
   private imageContainerLeft: number = 0;
 
-  @state()
-  pressed = false;
-
-  @state()
-  sliderPosition: number | string = 'calc(50% - calc(var(--thumb-size) / 2))';
-
-  @property({ type: String, reflect: true })
-  variant: Variants = 'overlay';
+  @property({ type: String })
+  private variant: Variants = 'overlay';
 
   @property({ type: String })
-  overlayPrompt = 'Tap and hold to compare';
+  private overlayPrompt = 'Tap and hold to compare';
 
   @property({ type: String })
-  sliderPrompt = 'Move to compare';
+  private sliderPrompt = 'Move the slider to compare';
 
   @query('#image-container')
   private imageContainer!: HTMLDivElement;
 
   @state()
-  private overlay = clipPath('50', '%');
+  private overlay: string = dynamicOverlayClipPath(50, '%');
 
   @state()
-  slidingActive = false;
+  private slidingActive = false;
 
-  getHorizontalCursorPosition(event: MouseEvent): number {
-    // the relative x position to your window
-    return event.pageX - this.imageContainerLeft - window.scrollX;
+  @state()
+  private pressed = false;
+
+  @state()
+  private sliderPosition: string = 'calc(50% - calc(var(--thumb-size) / 2))';
+
+  private getHorizontalCursorPosition(
+    dragEvent: MouseEvent | TouchEvent
+  ): number {
+    // Handle MouseEvent
+    if (dragEvent instanceof MouseEvent) {
+      return dragEvent.pageX - this.imageContainerLeft - window.scrollX;
+    }
+    // Handle TouchEvent
+    return (
+      dragEvent.changedTouches[0].pageX -
+      this.imageContainerLeft -
+      window.scrollX
+    );
   }
 
-  finishSliding() {
+  private finishSliding(): void {
     this.slidingActive = false;
   }
 
-  slideCompare(event: MouseEvent) {
+  private slideCompare(event: MouseEvent | TouchEvent): false | null {
     if (this.slidingActive === false) return false;
 
     let pos = this.getHorizontalCursorPosition(event);
@@ -71,10 +81,12 @@ export class ImageComparison extends LitElement {
     if (pos > this.imageContainerWidth) pos = this.imageContainerWidth;
 
     this.sliderPosition = `calc(${pos}px - calc(var(--thumb-size) / 2))`;
-    this.overlay = clipPath(pos, 'px');
+    this.overlay = dynamicOverlayClipPath(pos, 'px');
+
+    return null;
   }
 
-  setPressed(val: boolean) {
+  private setPressed(val: boolean): void {
     this.pressed = val;
   }
 
@@ -85,18 +97,30 @@ export class ImageComparison extends LitElement {
     this.slideCompare = this.slideCompare.bind(this);
   }
 
-  firstUpdated() {
-    const { left, width } = this.imageContainer.getBoundingClientRect();
-
-    this.imageContainerWidth = width;
-    this.imageContainerLeft = left;
+  firstUpdated(): void {
+    /**
+     * Extract the left and width value of imageContainer
+     */
+    if (this.variant === 'slider') {
+      const { left, width } = this.imageContainer.getBoundingClientRect();
+      this.imageContainerLeft = left;
+      this.imageContainerWidth = width;
+    }
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
 
-    window.addEventListener('mousemove', event => this.slideCompare(event));
+    window.addEventListener('mousemove', event => {
+      this.slideCompare(event);
+    });
+
+    window.addEventListener('touchmove', event => {
+      this.slideCompare(event);
+    });
+
     window.addEventListener('mouseup', () => this.finishSliding());
+    window.addEventListener('touchend', () => this.finishSliding());
   }
 
   /**
@@ -155,10 +179,9 @@ export class ImageComparison extends LitElement {
      * ┌───┬─────┐
      * │  <│>    │
      * └───┴─────┘
-     aria-valuenow=${this.sliderPosition}
      */
     const sliderTemplate = html`
-      <div id="image-container" role="separator">
+      <div id="image-container" role="separator" title=${this.sliderPrompt}>
         <div id="one" style="${this.overlay}">
           <slot name="img-slide-2"></slot>
         </div>
@@ -170,6 +193,11 @@ export class ImageComparison extends LitElement {
             this.slidingActive = true;
           }}
           @mousemove=${(e: MouseEvent) => this.slideCompare(e)}
+          @touchstart=${(event: TouchEvent) => {
+            event.preventDefault();
+            this.slidingActive = true;
+          }}
+          @touchmove=${(e: TouchEvent) => this.slideCompare(e)}
           style="left: ${this.sliderPosition}"
         ></button>
       </div>
