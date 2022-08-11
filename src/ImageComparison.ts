@@ -88,10 +88,33 @@ export class ImageComparison extends LitElement {
     this.slidingActive = val;
   }
 
-  private slideCompareHandler = (event: MouseEvent | TouchEvent): void =>
+  private slideCompareHandler(event: MouseEvent | TouchEvent): void {
     this.slideCompare(event);
+  }
 
-  private slideEndHandler = (): void => this.setSlidingState(false);
+  private slideEndHandler(): void {
+    this.setSlidingState(false);
+  }
+
+  private resizeHandler(): void {
+    this.getContainerLeftPlusWidth();
+    this.centerSlider();
+    this.setSlidingState(false);
+  }
+
+  private centerSlider(): void {
+    this.overlay = dynamicOverlayClipPath(50, '%');
+    this.sliderPosition = 'calc(50% - calc(var(--thumb-size) / 2))';
+  }
+
+  /**
+   * Extract the left and width value of imageContainer
+   */
+  private getContainerLeftPlusWidth() {
+    const { left, width } = this.imageContainer.getBoundingClientRect();
+    this.imageContainerLeft = left;
+    this.imageContainerWidth = width;
+  }
 
   /**
    * Slider EventListener are added when 'variant' is set to 'slider'
@@ -104,6 +127,8 @@ export class ImageComparison extends LitElement {
       // Stop moving the slider
       window.addEventListener('mouseup', this.slideEndHandler);
       window.addEventListener('touchend', this.slideEndHandler);
+
+      window.addEventListener('resize', this.resizeHandler);
     }
   }
 
@@ -117,6 +142,8 @@ export class ImageComparison extends LitElement {
     // End sliding
     window.removeEventListener('mouseup', this.slideEndHandler);
     window.removeEventListener('touchend', this.slideEndHandler);
+
+    window.removeEventListener('resize', this.resizeHandler);
   }
 
   constructor() {
@@ -183,6 +210,7 @@ export class ImageComparison extends LitElement {
             this.setSlidingState(true);
           }}
           @touchmove=${(e: TouchEvent) => this.slideCompareHandler(e)}
+          @dblclick=${this.centerSlider}
           style="left: ${this.sliderPosition}"
         ></button>
       </div>
@@ -243,11 +271,6 @@ export class ImageComparison extends LitElement {
    * one-time work after the component's DOM has been created.
    */
   firstUpdated(): void {
-    /**
-     * Extract the left and width value of imageContainer
-     */
-    const { left, width } = this.imageContainer.getBoundingClientRect();
-    this.imageContainerLeft = left;
-    this.imageContainerWidth = width;
+    this.getContainerLeftPlusWidth();
   }
 }
