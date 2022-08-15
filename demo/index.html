@@ -5,15 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Tony Spegel" />
+    <meta name="theme-color" content="hsl(262, 47%, 55%)" />
 
     <title>&ltimage-comparison/> Demo</title>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        line-height: calc(0.25rem + 1em + 0.25rem);
-      }
-
       *,
       ::before,
       ::after {
@@ -25,12 +20,12 @@
         margin: var(--base-gap);
       }
 
-      h1 {
-        font-size: 2em;
-      }
-
       :where(html) {
         --base-gap: 16px;
+        --lilac: hsl(262, 47%, 55%);
+        margin: 0;
+        padding: 0;
+        line-height: calc(0.25rem + 1em + 0.25rem);
       }
 
       :where(img, svg, video, canvas, audio, iframe, embed, object) {
@@ -45,6 +40,20 @@
       body {
         font-family: sans-serif;
         text-align: center;
+        color: hsl(263, 52%, 19%);
+      }
+
+      h1 {
+        margin-bottom: calc(var(--base-gap) / 2);
+
+        font-size: 2em;
+        color: var(--lilac);
+      }
+
+      hr {
+        border: 1px solid var(--lilac);
+        background-color: var(--lilac);
+        max-width: 180px;
       }
 
       fieldset {
@@ -60,6 +69,12 @@
         align-items: center;
         justify-content: center;
         gap: var(--base-gap);
+      }
+
+      .radio-wrapper {
+        display: flex;
+        align-items: center;
+        gap: calc(var(--base-gap) / 4);
       }
 
       input[type='radio'],
@@ -92,11 +107,13 @@
       >Compare two images using a slider, an overlay, or a split view</span
     >
 
+    <hr>
+
     <fieldset>
       <legend>Select a variant</legend>
 
       <div id="radio-wrapper-container">
-        <div>
+        <div class="radio-wrapper">
           <input
             checked
             id="variant-slider"
@@ -107,7 +124,7 @@
           <label for="variant-slider">Slider</label>
         </div>
 
-        <div>
+        <div class="radio-wrapper">
           <input
             id="variant-overlay"
             name="image-comparison-variants"
@@ -117,7 +134,7 @@
           <label for="variant-overlay">Overlay</label>
         </div>
 
-        <div>
+        <div class="radio-wrapper">
           <input
             id="variant-split"
             name="image-comparison-variants"
@@ -139,9 +156,16 @@
 
       const imageComparisonTemplate = html`
         <image-comparison variant="slider">
-          <img slot="img-slide-1" src="../assets/kasimir.jpg" alt="kasimir" />
+          <label slot="label-before" class="image-comparison-label"
+            >Original</label
+          >
+          <label slot="label-after" class="image-comparison-label"
+            >Vogue Filter</label
+          >
+
+          <img slot="image-before" src="../assets/kasimir.jpg" alt="kasimir" />
           <img
-            slot="img-slide-2"
+            slot="image-after"
             src="../assets/kasimir_filter.jpg"
             alt="kasimir with filter applied"
           />
