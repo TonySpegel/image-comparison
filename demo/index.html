@@ -107,7 +107,7 @@
       >Compare two images using a slider, an overlay, or a split view</span
     >
 
-    <hr>
+    <hr />
 
     <fieldset>
       <legend>Select a variant</legend>
@@ -156,12 +156,8 @@
 
       const imageComparisonTemplate = html`
         <image-comparison variant="slider">
-          <label slot="label-before" class="image-comparison-label"
-            >Original</label
-          >
-          <label slot="label-after" class="image-comparison-label"
-            >Vogue Filter</label
-          >
+          <label slot="label-before">Original</label>
+          <label slot="label-after">Vogue Filter</label>
 
           <img slot="image-before" src="../assets/kasimir.jpg" alt="kasimir" />
           <img
