@@ -76,8 +76,6 @@ export default css`
     justify-self: flex-end;
   }
 
-  
-
   /**
    * Overlay
    */
@@ -122,7 +120,7 @@ export default css`
   /**
    * Split
    */
-   :host([variant='split']) #image-container {
+  :host([variant='split']) #image-container {
     gap: var(--split-gap);
     grid-template-columns: 1fr 1fr;
   }
