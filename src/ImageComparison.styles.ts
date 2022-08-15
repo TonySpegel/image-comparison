@@ -13,32 +13,21 @@ export default css`
   :host {
     --base-gap: 16px;
     --split-gap: var(--base-gap);
+    --base-radius: 8px;
 
-    --thumb-size: 40px;
-    --thumb-border-width: 3px;
-    --bar-width: var(--thumb-border-width);
     --slider-color: #fff;
     --slider-color-active: #fff;
 
+    --thumb-size: 40px;
+    --thumb-border-width: 3px;
+    --thumb-bar-width: var(--thumb-border-width);
+
+    --label-background-color: #fff;
+    --label-color: #000;
+    --label-radius: var(--base-radius);
+
     display: block;
     box-sizing: border-box;
-  }
-
-  :host([variant='split']) #image-container {
-    gap: var(--split-gap);
-    grid-template-columns: 1fr 1fr;
-  }
-
-  :host([variant='overlay']) {
-    cursor: pointer;
-  }
-
-  #image-container.pressed ::slotted(*:last-child) {
-    order: 1;
-  }
-
-  :host([variant='overlay']) ::slotted(img) {
-    grid-area: images;
   }
 
   #image-container {
@@ -46,6 +35,96 @@ export default css`
     grid-template-areas: 'images';
     position: relative;
     overflow: hidden;
+  }
+
+  /**
+   * Labels
+   */
+  ::slotted([slot^='label-']) {
+    grid-area: images;
+    align-self: flex-end;
+    z-index: 4;
+
+    margin: calc(var(--base-gap) / 2);
+    border-radius: var(--label-radius);
+    padding: calc(var(--base-gap) / 4) calc(var(--base-gap) / 2);
+
+    line-height: 1;
+
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+
+    background-color: var(--label-background-color);
+    color: var(--label-color);
+  }
+
+  /**
+   * Slider
+   * ===============================================
+   */
+  :host([variant='slider'])
+    #image-container:is(:hover, :focus-within, .sliding-active)
+    ::slotted([slot^='label-']) {
+    opacity: 1;
+  }
+
+  :host([variant='slider']) ::slotted([slot='label-before']) {
+    justify-self: flex-start;
+  }
+
+  :host([variant='slider']) ::slotted([slot='label-after']) {
+    justify-self: flex-end;
+  }
+
+  
+
+  /**
+   * Overlay
+   */
+  :host([variant='overlay']) {
+    cursor: pointer;
+  }
+
+  :host([variant='overlay']) ::slotted(img),
+  :host([variant='overlay']) ::slotted(picture) {
+    grid-area: images;
+  }
+
+  /* Switch order of images */
+  #image-container.pressed ::slotted([slot='image-after']) {
+    order: 1;
+  }
+
+  :host([variant='overlay'])
+    #image-container:hover
+    ::slotted([slot='label-before']) {
+    opacity: 1;
+  }
+
+  #image-container.pressed ::slotted([slot='label-before']) {
+    opacity: 0;
+  }
+
+  #image-container.pressed ::slotted([slot='label-after']) {
+    opacity: 1;
+  }
+
+  :host([variant='overlay'])
+    #image-container.pressed:hover
+    ::slotted([slot='label-before']) {
+    opacity: 0;
+  }
+
+  :host([variant='overlay']) ::slotted([slot^='label-']) {
+    justify-self: center;
+  }
+
+  /**
+   * Split
+   */
+   :host([variant='split']) #image-container {
+    gap: var(--split-gap);
+    grid-template-columns: 1fr 1fr;
   }
 
   button {
@@ -58,7 +137,6 @@ export default css`
     aspect-ratio: 1;
 
     align-self: center;
-
     grid-area: images;
 
     cursor: col-resize;
@@ -77,8 +155,8 @@ export default css`
   button:before,
   button:after {
     content: '';
-    width: var(--bar-width);
-    left: calc(50% - calc(var(--bar-width) / 2));
+    width: var(--thumb-bar-width);
+    left: calc(50% - calc(var(--thumb-bar-width) / 2));
     background-color: var(--slider-color);
     position: absolute;
     height: 100vh;
@@ -95,15 +173,15 @@ export default css`
     top: calc(var(--thumb-size) - var(--thumb-border-width));
   }
 
-  #one {
+  #container-after {
     will-change: clip;
     z-index: 2;
     pointer-events: none;
     overflow: hidden;
   }
 
-  #one,
-  #two {
+  #container-before,
+  #container-after {
     grid-area: images;
   }
 `;
