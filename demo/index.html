@@ -64,11 +64,12 @@
         text-align: center;
       }
 
-      #radio-wrapper-container {
+      .radio-wrapper-container {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: var(--base-gap);
+        direction: ltr;
       }
 
       .radio-wrapper {
@@ -112,7 +113,7 @@
     <fieldset>
       <legend>Select a variant</legend>
 
-      <div id="radio-wrapper-container">
+      <div class="radio-wrapper-container">
         <div class="radio-wrapper">
           <input
             checked
@@ -146,6 +147,32 @@
       </div>
     </fieldset>
 
+    <fieldset>
+      <legend>Select reading direction</legend>
+      <div class="radio-wrapper-container">
+        <div class="radio-wrapper">
+          <input
+            checked
+            id="dir-ltr"
+            name="image-comparison-reading-direction"
+            type="radio"
+            value="ltr"
+          />
+          <label for="dir-ltr" title="left to right">ltr</label>
+        </div>
+
+        <div class="radio-wrapper">
+          <input
+            id="dir-rtl"
+            name="image-comparison-reading-direction"
+            type="radio"
+            value="rtl"
+          />
+          <label for="dir-rtl" title="right to left">rtl</label>
+        </div>
+      </div>
+    </fieldset>
+
     <div id="demo"></div>
 
     <span id="copyright-notice">© 2022 Tony Spegel</span>
@@ -171,7 +198,11 @@
       render(imageComparisonTemplate, document.querySelector('#demo'));
 
       const radioButtonVariants = document.querySelectorAll(
-        'input[type="radio"]'
+        'input[name="image-comparison-variants"]'
+      );
+
+      const radioButtonReadingDirections = document.querySelectorAll(
+        'input[name="image-comparison-reading-direction"]'
       );
 
       const imageComparisonComponent =
@@ -182,6 +213,13 @@
           const { value } = e.target;
 
           imageComparisonComponent.setAttribute('variant', value);
+        });
+      });
+
+      radioButtonReadingDirections.forEach(rbDirection => {
+        rbDirection.addEventListener('click', e => {
+          const { value } = e.target;
+          document.querySelector('html').setAttribute('dir', value);
         });
       });
     </script>

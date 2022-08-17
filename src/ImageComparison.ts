@@ -29,6 +29,10 @@ export class ImageComparison extends LitElement {
 
   private imageContainerLeft: number = 0;
 
+  private thumbSizeHalf: number = 0;
+
+  private thumbBorderHalfWidth: number = 0;
+
   /**
    * Defines the look and behaviour of <image-comparison>
    */
@@ -61,24 +65,13 @@ export class ImageComparison extends LitElement {
   }
 
   private getHorizontalCursorPosition(
-    dragEvent: MouseEvent | TouchEvent | KeyboardEvent
+    dragEvent: MouseEvent | TouchEvent
   ): number {
     // Handle MouseEvent
     if (dragEvent instanceof MouseEvent) {
       return dragEvent.pageX - this.imageContainerLeft - window.scrollX;
     }
 
-    if (dragEvent instanceof KeyboardEvent) {
-      //   // console.log('key');
-
-      //   const { left } = (
-      //     dragEvent.target as HTMLButtonElement
-      //   ).getBoundingClientRect();
-
-      //   // console.log(left);
-
-      return 2;
-    }
 
     // Handle TouchEvent
     return (
@@ -112,11 +105,11 @@ export class ImageComparison extends LitElement {
     this.setSlidingState(false);
   }
 
-  private resizeHandler(): void {
-    this.getContainerLeftPlusWidth();
-    this.centerSlider();
-    this.setSlidingState(false);
-  }
+  // private resizeHandler(): void {
+  //   this.getContainerLeftPlusWidth();
+  //   this.centerSlider();
+  //   this.setSlidingState(false);
+  // }
 
   private centerSlider(): void {
     this.overlay = dynamicOverlayClipPath(50, '%');
@@ -156,8 +149,6 @@ export class ImageComparison extends LitElement {
     // End sliding
     window.removeEventListener('mouseup', this.slideEndHandler);
     window.removeEventListener('touchend', this.slideEndHandler);
-
-    window.removeEventListener('resize', this.resizeHandler);
   }
 
   constructor() {
@@ -165,16 +156,11 @@ export class ImageComparison extends LitElement {
 
     this.slideCompareHandler = this.slideCompareHandler.bind(this);
     this.slideEndHandler = this.slideEndHandler.bind(this);
-    this.resizeHandler = this.resizeHandler.bind(this);
-
-    window.addEventListener('resize', this.resizeHandler);
-    window.addEventListener('orientationchange', this.resizeHandler);
   }
 
   /**
    * Because slider EventListener are only added when the
-   * 'variant' attribute is set to 'slider',
-   * you also have to react to changes of it when it later takes this value
+   * 'variant' attribute is set to 'slider', you also have to react to its changes
    */
   override attributeChangedCallback(
     name: string = 'variant',
@@ -191,7 +177,21 @@ export class ImageComparison extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
 
-    // console.log(getComputedStyle(this).getPropertyValue('--thumb-size'));
+    this.thumbSizeHalf =
+      parseInt(
+        getComputedStyle(this)
+          .getPropertyValue('--thumb-size')
+          .replace('px', ''),
+        10
+      ) / 2;
+
+    this.thumbBorderHalfWidth =
+      parseInt(
+        getComputedStyle(this)
+          .getPropertyValue('--thumb-border-width')
+          .replace('px', ''),
+        10
+      ) / 2;
 
     this.addSliderEventListener();
   }
@@ -243,25 +243,42 @@ export class ImageComparison extends LitElement {
               event.target as HTMLButtonElement
             ).getBoundingClientRect();
 
-            const relativeLeft =
-              left - this.imageContainerLeft - window.scrollX;
-
-            // console.log(left);
-            // console.log(relativeLeft);
-
             if (event.key === 'ArrowLeft') {
+              let relativeLeft =
+                left - this.imageContainerLeft - window.scrollX;
+
+              if (
+                relativeLeft <
+                this.thumbSizeHalf * -1 - this.thumbBorderHalfWidth * -1
+              )
+                relativeLeft =
+                  this.thumbSizeHalf * -1 - this.thumbBorderHalfWidth * -1;
+
               this.sliderPosition = `calc(${relativeLeft - 1}px)`;
               this.overlay = dynamicOverlayClipPath(
-                relativeLeft + 20 - 1,
+                relativeLeft + this.thumbSizeHalf - 1,
                 'px'
               );
             }
 
             if (event.key === 'ArrowRight') {
+              let relativeLeft =
+                left - this.imageContainerLeft - window.scrollX;
+              if (
+                relativeLeft >
+                this.imageContainerWidth -
+                  this.thumbBorderHalfWidth -
+                  this.thumbSizeHalf
+              )
+                relativeLeft =
+                  this.imageContainerWidth -
+                  this.thumbBorderHalfWidth -
+                  this.thumbSizeHalf;
+
               this.sliderPosition = `calc(${relativeLeft + 1}px)`;
 
               this.overlay = dynamicOverlayClipPath(
-                relativeLeft + 20 + 1,
+                relativeLeft + this.thumbSizeHalf + 1,
                 'px'
               );
             }
@@ -312,6 +329,8 @@ export class ImageComparison extends LitElement {
      */
     const splitTemplate = html`
       <div id="image-container">
+        <slot name="label-before"></slot>
+        <slot name="label-after"></slot>
         <slot name="image-before"></slot>
         <slot name="image-after"></slot>
       </div>
