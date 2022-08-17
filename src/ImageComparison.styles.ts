@@ -121,8 +121,32 @@ export default css`
    * Split
    */
   :host([variant='split']) #image-container {
-    gap: var(--split-gap);
+    column-gap: var(--split-gap);
+
     grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'image-before image-after'
+      'label-before label-after';
+  }
+
+  :host([variant='split']) ::slotted([slot='image-before']) {
+    grid-area: image-before;
+  }
+
+  :host([variant='split']) ::slotted([slot='image-after']) {
+    grid-area: image-after;
+  }
+
+  :host([variant='split']) ::slotted([slot^='label-']) {
+    opacity: 1;
+  }
+
+  :host([variant='split']) ::slotted([slot='label-before']) {
+    grid-area: label-before;
+  }
+
+  :host([variant='split']) ::slotted([slot='label-after']) {
+    grid-area: label-after;
   }
 
   button {
