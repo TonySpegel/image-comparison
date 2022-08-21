@@ -11,15 +11,21 @@ import { choose } from 'lit/directives/choose.js';
 import { html, LitElement, TemplateResult } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import styles from './ImageComparison.styles';
+import { clamp } from './helper/clamp.js';
 
 type Variants = 'overlay' | 'slider' | 'split';
 
 const dynamicOverlayClipPath = (
   xPosValue: number,
-  xPosUnit: string = '%'
+  xPosUnit: string = '%',
+  isRtl: boolean = false
 ): string => {
   const xPos = `${xPosValue}${xPosUnit}`;
-  return `clip-path: polygon(${xPos} 0%, 100% 0%, 100% 100%, ${xPos} 100%);`;
+  const clipPath = isRtl
+    ? `clip-path: polygon(${xPos} 0%, 100% 0%, 100% 100%, ${xPos} 100%);`
+    : `clip-path: polygon(${xPos} 0%, 100% 0%, 100% 100%, ${xPos} 100%);`;
+
+  return clipPath;
 };
 
 export class ImageComparison extends LitElement {
@@ -72,7 +78,6 @@ export class ImageComparison extends LitElement {
       return dragEvent.pageX - this.imageContainerLeft - window.scrollX;
     }
 
-
     // Handle TouchEvent
     return (
       dragEvent.changedTouches[0].pageX -
@@ -81,15 +86,29 @@ export class ImageComparison extends LitElement {
     );
   }
 
-  private slideCompare(event: MouseEvent | TouchEvent): void {
+  // eslint-disable-next-line class-methods-use-this
+  private horizontalCursor(event: PointerEvent): number {
+    const { left, width } = this.imageContainer.getBoundingClientRect();
+    const { scrollX } = window;
+    const { pageX } = event;
+
+    const xOffset = left + scrollX;
+    const x = pageX - xOffset;
+
+    const pos = parseFloat(clamp((x / width) * 100, 0, 100).toFixed(2));
+
+    return pos;
+  }
+
+  private slideCompare(event: MouseEvent | TouchEvent | PointerEvent): void {
     if (this.slidingActive) {
-      let pos = this.getHorizontalCursorPosition(event);
+      const pos = this.horizontalCursor(event as PointerEvent);
 
-      if (pos < 0) pos = 0;
-      if (pos > this.imageContainerWidth) pos = this.imageContainerWidth;
+      // if (pos < 0) pos = 0;
+      // if (pos > this.imageContainerWidth) pos = this.imageContainerWidth;
 
-      this.sliderPosition = `calc(${pos}px - calc(var(--thumb-size) / 2))`;
-      this.overlay = dynamicOverlayClipPath(pos, 'px');
+      this.sliderPosition = `calc(${pos}% - calc(var(--thumb-size) / 2))`;
+      this.overlay = dynamicOverlayClipPath(pos, '%');
     }
   }
 
@@ -105,15 +124,20 @@ export class ImageComparison extends LitElement {
     this.setSlidingState(false);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  private keyboardHandler(event: KeyboardEvent) {
+    console.log(event);
+  }
+
   // private resizeHandler(): void {
   //   this.getContainerLeftPlusWidth();
   //   this.centerSlider();
   //   this.setSlidingState(false);
   // }
 
-  private centerSlider(): void {
-    this.overlay = dynamicOverlayClipPath(50, '%');
-    this.sliderPosition = 'calc(50% - calc(var(--thumb-size) / 2))';
+  private moveSliderPosition(pos: number = 50): void {
+    this.overlay = dynamicOverlayClipPath(pos, '%');
+    this.sliderPosition = `calc(${pos}% - calc(var(--thumb-size) / 2))`;
   }
 
   /**
@@ -230,7 +254,6 @@ export class ImageComparison extends LitElement {
           @mousedown=${() => {
             this.setSlidingState(true);
           }}
-          @mousemove=${(e: MouseEvent) => this.slideCompareHandler(e)}
           @touchstart=${(event: TouchEvent) => {
             event.preventDefault();
             this.setSlidingState(true);
@@ -243,7 +266,9 @@ export class ImageComparison extends LitElement {
               event.target as HTMLButtonElement
             ).getBoundingClientRect();
 
-            if (event.key === 'ArrowLeft') {
+            const { key } = event;
+
+            if (key === 'ArrowLeft') {
               let relativeLeft =
                 left - this.imageContainerLeft - window.scrollX;
 
@@ -261,7 +286,7 @@ export class ImageComparison extends LitElement {
               );
             }
 
-            if (event.key === 'ArrowRight') {
+            if (key === 'ArrowRight') {
               let relativeLeft =
                 left - this.imageContainerLeft - window.scrollX;
               if (
@@ -282,9 +307,19 @@ export class ImageComparison extends LitElement {
                 'px'
               );
             }
+
+            if (key === 'Home') {
+              event.preventDefault();
+              this.moveSliderPosition(0);
+            }
+
+            if (key === 'End') {
+              event.preventDefault();
+              this.moveSliderPosition(100);
+            }
           }}
           @keyup=${() => this.setSlidingState(false)}
-          @dblclick=${this.centerSlider}
+          @dblclick=${() => this.moveSliderPosition()}
           style="left: ${this.sliderPosition}"
           title=${this.sliderPrompt}
         ></button>
