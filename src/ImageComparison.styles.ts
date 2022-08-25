@@ -156,6 +156,8 @@ export default css`
     border: var(--thumb-border-width) solid var(--slider-color);
     border-radius: 50%;
     width: var(--thumb-size);
+    transform: translateX(-50%);
+
     aspect-ratio: 1;
 
     align-self: center;

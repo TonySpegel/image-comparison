@@ -14,24 +14,18 @@ import styles from './ImageComparison.styles';
 
 type Variants = 'overlay' | 'slider' | 'split';
 
-const dynamicOverlayClipPath = (
-  xPosValue: number,
-  xPosUnit: string = '%'
-): string => {
-  const xPos = `${xPosValue}${xPosUnit}`;
-  return `clip-path: polygon(${xPos} 0%, 100% 0%, 100% 100%, ${xPos} 100%);`;
+const dynamicOverlayClipPath = (xPos: number): string => {
+  return `clip-path: polygon(${xPos}% 0%, 100% 0%, 100% 100%, ${xPos}% 100%);`;
 };
+
+/**
+ * Clamps a value between an upper and lower bound
+ */
+const clamp = (num: number, min: number, max: number): number =>
+  Math.min(Math.max(num, min), max);
 
 export class ImageComparison extends LitElement {
   static styles: CSSResultGroup = styles;
-
-  private imageContainerWidth: number = 0;
-
-  private imageContainerLeft: number = 0;
-
-  private thumbSizeHalf: number = 0;
-
-  private thumbBorderHalfWidth: number = 0;
 
   /**
    * Defines the look and behaviour of <image-comparison>
@@ -45,6 +39,9 @@ export class ImageComparison extends LitElement {
   @property({ type: String })
   private sliderPrompt = 'Move the slider to compare';
 
+  @property({ type: Number, reflect: true })
+  private sliderPosition: number = 50;
+
   @query('#image-container')
   private imageContainer!: HTMLDivElement;
 
@@ -52,10 +49,7 @@ export class ImageComparison extends LitElement {
   private slidingActive = false;
 
   @state()
-  private sliderPosition: string = 'calc(50% - calc(var(--thumb-size) / 2))';
-
-  @state()
-  private overlay: string = dynamicOverlayClipPath(50, '%');
+  private overlay: string = dynamicOverlayClipPath(50);
 
   @state()
   private pressed = false;
@@ -64,32 +58,31 @@ export class ImageComparison extends LitElement {
     this.pressed = val;
   }
 
-  private getHorizontalCursorPosition(
-    dragEvent: MouseEvent | TouchEvent
-  ): number {
-    // Handle MouseEvent
-    if (dragEvent instanceof MouseEvent) {
-      return dragEvent.pageX - this.imageContainerLeft - window.scrollX;
-    }
+  /**
+   * The relative position of a cursor (as in: a touch or mouse device)
+   * is converted into a clamped slider position value
+   */
+  convertCursorToSliderPosition(event: TouchEvent | MouseEvent): number {
+    const { left, width } = this.imageContainer.getBoundingClientRect();
+    const { scrollX } = window;
+    const pageX =
+      event instanceof MouseEvent ? event.pageX : event.changedTouches[0].pageX;
+    const xOffset = left + scrollX;
+    const x = pageX - xOffset;
 
-
-    // Handle TouchEvent
-    return (
-      dragEvent.changedTouches[0].pageX -
-      this.imageContainerLeft -
-      window.scrollX
+    const sliderPostion = parseFloat(
+      clamp((x / width) * 100, 0, 100).toFixed(2)
     );
+
+    return sliderPostion;
   }
 
   private slideCompare(event: MouseEvent | TouchEvent): void {
     if (this.slidingActive) {
-      let pos = this.getHorizontalCursorPosition(event);
+      const pos = this.convertCursorToSliderPosition(event);
 
-      if (pos < 0) pos = 0;
-      if (pos > this.imageContainerWidth) pos = this.imageContainerWidth;
-
-      this.sliderPosition = `calc(${pos}px - calc(var(--thumb-size) / 2))`;
-      this.overlay = dynamicOverlayClipPath(pos, 'px');
+      this.sliderPosition = pos;
+      this.overlay = dynamicOverlayClipPath(pos);
     }
   }
 
@@ -105,24 +98,9 @@ export class ImageComparison extends LitElement {
     this.setSlidingState(false);
   }
 
-  // private resizeHandler(): void {
-  //   this.getContainerLeftPlusWidth();
-  //   this.centerSlider();
-  //   this.setSlidingState(false);
-  // }
-
   private centerSlider(): void {
-    this.overlay = dynamicOverlayClipPath(50, '%');
-    this.sliderPosition = 'calc(50% - calc(var(--thumb-size) / 2))';
-  }
-
-  /**
-   * Extract the left and width value of imageContainer
-   */
-  private getContainerLeftPlusWidth() {
-    const { left, width } = this.imageContainer.getBoundingClientRect();
-    this.imageContainerLeft = left;
-    this.imageContainerWidth = width;
+    this.overlay = dynamicOverlayClipPath(50);
+    this.sliderPosition = 50;
   }
 
   /**
@@ -177,22 +155,6 @@ export class ImageComparison extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
 
-    this.thumbSizeHalf =
-      parseInt(
-        getComputedStyle(this)
-          .getPropertyValue('--thumb-size')
-          .replace('px', ''),
-        10
-      ) / 2;
-
-    this.thumbBorderHalfWidth =
-      parseInt(
-        getComputedStyle(this)
-          .getPropertyValue('--thumb-border-width')
-          .replace('px', ''),
-        10
-      ) / 2;
-
     this.addSliderEventListener();
   }
 
@@ -213,6 +175,9 @@ export class ImageComparison extends LitElement {
      * └───┴─────┘
      */
     const sliderTemplate = html`
+      <pre>
+sliderPosition: ${this.sliderPosition}
+</pre>
       <div
         id="image-container"
         class=${this.slidingActive ? 'sliding-active' : ''}
@@ -236,56 +201,9 @@ export class ImageComparison extends LitElement {
             this.setSlidingState(true);
           }}
           @touchmove=${(e: TouchEvent) => this.slideCompareHandler(e)}
-          @keydown=${(event: KeyboardEvent): void => {
-            this.setSlidingState(true);
-
-            const { left } = (
-              event.target as HTMLButtonElement
-            ).getBoundingClientRect();
-
-            if (event.key === 'ArrowLeft') {
-              let relativeLeft =
-                left - this.imageContainerLeft - window.scrollX;
-
-              if (
-                relativeLeft <
-                this.thumbSizeHalf * -1 - this.thumbBorderHalfWidth * -1
-              )
-                relativeLeft =
-                  this.thumbSizeHalf * -1 - this.thumbBorderHalfWidth * -1;
-
-              this.sliderPosition = `calc(${relativeLeft - 1}px)`;
-              this.overlay = dynamicOverlayClipPath(
-                relativeLeft + this.thumbSizeHalf - 1,
-                'px'
-              );
-            }
-
-            if (event.key === 'ArrowRight') {
-              let relativeLeft =
-                left - this.imageContainerLeft - window.scrollX;
-              if (
-                relativeLeft >
-                this.imageContainerWidth -
-                  this.thumbBorderHalfWidth -
-                  this.thumbSizeHalf
-              )
-                relativeLeft =
-                  this.imageContainerWidth -
-                  this.thumbBorderHalfWidth -
-                  this.thumbSizeHalf;
-
-              this.sliderPosition = `calc(${relativeLeft + 1}px)`;
-
-              this.overlay = dynamicOverlayClipPath(
-                relativeLeft + this.thumbSizeHalf + 1,
-                'px'
-              );
-            }
-          }}
           @keyup=${() => this.setSlidingState(false)}
           @dblclick=${this.centerSlider}
-          style="left: ${this.sliderPosition}"
+          style="left: ${this.sliderPosition}%"
           title=${this.sliderPrompt}
         ></button>
       </div>
@@ -343,14 +261,5 @@ export class ImageComparison extends LitElement {
         ['split', () => splitTemplate],
       ])}
     `;
-  }
-
-  /**
-   * Called after the component's DOM has been updated the first time,
-   * immediately before updated() is called. Best for performing
-   * one-time work after the component's DOM has been created.
-   */
-  firstUpdated(): void {
-    this.getContainerLeftPlusWidth();
   }
 }
