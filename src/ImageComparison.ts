@@ -8,15 +8,12 @@
 import type { CSSResultGroup } from 'lit';
 
 import { choose } from 'lit/directives/choose.js';
+import { classMap } from 'lit/directives/class-map.js';
 import { html, LitElement, TemplateResult } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-import styles from './ImageComparison.styles';
+import styles from './ImageComparison.styles.js';
 
 type Variants = 'overlay' | 'slider' | 'split';
-
-const dynamicOverlayClipPath = (xPos: number): string => {
-  return `clip-path: polygon(${xPos}% 0%, 100% 0%, 100% 100%, ${xPos}% 100%);`;
-};
 
 /**
  * Clamps a value between an upper and lower bound
@@ -49,7 +46,10 @@ export class ImageComparison extends LitElement {
   private slidingActive = false;
 
   @state()
-  private overlay: string = dynamicOverlayClipPath(50);
+  private isRtl: boolean = false;
+
+  @state()
+  private overlay: string = this.dynamicOverlayClipPath(50);
 
   @state()
   private pressed = false;
@@ -77,12 +77,22 @@ export class ImageComparison extends LitElement {
     return sliderPostion;
   }
 
+  private dynamicOverlayClipPath(xPos: number): string {
+    /**
+     * 'inset' does not define logical but physical offsets
+     * (top right bottom left).
+     */
+    return this.isRtl
+      ? `clip-path: inset(0 ${100 - xPos}% 0 0)`
+      : `clip-path: inset(0 0 0 ${xPos}%)`;
+  }
+
   private slideCompare(event: MouseEvent | TouchEvent): void {
     if (this.slidingActive) {
       const pos = this.convertCursorToSliderPosition(event);
 
-      this.sliderPosition = pos;
-      this.overlay = dynamicOverlayClipPath(pos);
+      this.sliderPosition = this.isRtl ? 100 - pos : pos;
+      this.overlay = this.dynamicOverlayClipPath(pos);
     }
   }
 
@@ -99,7 +109,7 @@ export class ImageComparison extends LitElement {
   }
 
   private centerSlider(): void {
-    this.overlay = dynamicOverlayClipPath(50);
+    this.overlay = this.dynamicOverlayClipPath(50);
     this.sliderPosition = 50;
   }
 
@@ -180,17 +190,21 @@ sliderPosition: ${this.sliderPosition}
 </pre>
       <div
         id="image-container"
-        class=${this.slidingActive ? 'sliding-active' : ''}
+        class=${classMap({
+          'sliding-active': this.slidingActive,
+          rtl: this.isRtl,
+        })}
       >
         <slot name="label-before"></slot>
         <slot name="label-after"></slot>
 
-        <div id="container-after" style="${this.overlay}">
-          <slot name="image-after"></slot>
-        </div>
         <div id="container-before">
           <slot name="image-before"></slot>
         </div>
+        <div id="container-after" style=${this.overlay}>
+          <slot name="image-after"></slot>
+        </div>
+
         <button
           @mousedown=${() => {
             this.setSlidingState(true);
@@ -203,8 +217,11 @@ sliderPosition: ${this.sliderPosition}
           @touchmove=${(e: TouchEvent) => this.slideCompareHandler(e)}
           @keyup=${() => this.setSlidingState(false)}
           @dblclick=${this.centerSlider}
-          style="left: ${this.sliderPosition}%"
+          style="left: ${this.isRtl
+            ? -this.sliderPosition
+            : this.sliderPosition}%"
           title=${this.sliderPrompt}
+          aria-valuenow=${this.sliderPosition}
         ></button>
       </div>
     `;

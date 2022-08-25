@@ -76,6 +76,58 @@ export default css`
     justify-self: flex-end;
   }
 
+  #image-container.rtl button {
+    transform: translateX(50%);
+  }
+
+  button {
+    position: relative;
+    z-index: 3;
+
+    border: var(--thumb-border-width) solid var(--slider-color);
+    border-radius: 50%;
+    width: var(--thumb-size);
+    transform: translateX(-50%);
+
+    aspect-ratio: 1;
+
+    align-self: center;
+    grid-area: images;
+
+    cursor: col-resize;
+    background-color: transparent;
+  }
+
+  button:is(:focus, :hover) {
+    border-color: var(--slider-color-active);
+  }
+
+  button:is(:focus, :hover):before,
+  button:is(:focus, :hover):after {
+    background-color: var(--slider-color-active);
+  }
+
+  button:before,
+  button:after {
+    content: '';
+    width: var(--thumb-bar-width);
+    left: calc(50% - calc(var(--thumb-bar-width) / 2));
+    background-color: var(--slider-color);
+    position: absolute;
+    height: 100vh;
+    z-index: -1;
+  }
+
+  button:before {
+    bottom: calc(
+      50% + calc(var(--thumb-size) / 2) - calc(var(--thumb-border-width) / 2)
+    );
+  }
+
+  button:after {
+    top: calc(var(--thumb-size) - var(--thumb-border-width));
+  }
+
   /**
    * Overlay
    */
@@ -147,54 +199,6 @@ export default css`
 
   :host([variant='split']) ::slotted([slot='label-after']) {
     grid-area: label-after;
-  }
-
-  button {
-    position: relative;
-    z-index: 3;
-
-    border: var(--thumb-border-width) solid var(--slider-color);
-    border-radius: 50%;
-    width: var(--thumb-size);
-    transform: translateX(-50%);
-
-    aspect-ratio: 1;
-
-    align-self: center;
-    grid-area: images;
-
-    cursor: col-resize;
-    background-color: transparent;
-  }
-
-  button:is(:focus, :hover) {
-    border-color: var(--slider-color-active);
-  }
-
-  button:is(:focus, :hover):before,
-  button:is(:focus, :hover):after {
-    background-color: var(--slider-color-active);
-  }
-
-  button:before,
-  button:after {
-    content: '';
-    width: var(--thumb-bar-width);
-    left: calc(50% - calc(var(--thumb-bar-width) / 2));
-    background-color: var(--slider-color);
-    position: absolute;
-    height: 100vh;
-    z-index: -1;
-  }
-
-  button:before {
-    bottom: calc(
-      50% + calc(var(--thumb-size) / 2) - calc(var(--thumb-border-width) / 2)
-    );
-  }
-
-  button:after {
-    top: calc(var(--thumb-size) - var(--thumb-border-width));
   }
 
   #container-after {
