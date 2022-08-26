@@ -48,6 +48,8 @@
 
         font-size: 2em;
         color: var(--lilac);
+
+        direction: ltr;
       }
 
       hr {
@@ -99,6 +101,7 @@
         bottom: var(--base-gap);
         left: 0;
         right: 0;
+        direction: ltr;
       }
     </style>
   </head>
@@ -111,7 +114,7 @@
     <hr />
 
     <fieldset>
-      <legend>Select a variant</legend>
+      <legend>Variant</legend>
 
       <div class="radio-wrapper-container">
         <div class="radio-wrapper">
@@ -148,7 +151,7 @@
     </fieldset>
 
     <fieldset>
-      <legend>Select reading direction</legend>
+      <legend>Reading direction</legend>
       <div class="radio-wrapper-container">
         <div class="radio-wrapper">
           <input
@@ -175,7 +178,9 @@
 
     <div id="demo"></div>
 
+    <!--
     <span id="copyright-notice">© 2022 Tony Spegel</span>
+    -->
 
     <script type="module">
       import { html, render } from 'lit';

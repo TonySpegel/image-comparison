@@ -58,6 +58,8 @@ export class ImageComparison extends LitElement {
     this.pressed = val;
   }
 
+  private readingDirectionObserver!: MutationObserver;
+
   /**
    * The relative position of a cursor (as in: a touch or mouse device)
    * is converted into a clamped slider position value
@@ -77,40 +79,63 @@ export class ImageComparison extends LitElement {
     return sliderPostion;
   }
 
+  /**
+   * Inline 'clip-path' to mask images
+   */
   private dynamicOverlayClipPath(xPos: number): string {
     /**
      * 'inset' does not define logical but physical offsets
      * (top right bottom left).
      */
     return this.isRtl
-      ? `clip-path: inset(0 ${100 - xPos}% 0 0)`
+      ? `clip-path: inset(0 ${xPos}% 0 0)`
       : `clip-path: inset(0 0 0 ${xPos}%)`;
   }
 
+  /**
+   * Converts 'cursor' position and updates the UI accordingly
+   */
   private slideCompare(event: MouseEvent | TouchEvent): void {
     if (this.slidingActive) {
-      const pos = this.convertCursorToSliderPosition(event);
+      let pos = this.convertCursorToSliderPosition(event);
+      pos = this.isRtl ? 100 - pos : pos;
 
-      this.sliderPosition = this.isRtl ? 100 - pos : pos;
+      this.sliderPosition = pos;
       this.overlay = this.dynamicOverlayClipPath(pos);
     }
-  }
-
-  private setSlidingState(val: boolean): void {
-    this.slidingActive = val;
   }
 
   private slideCompareHandler(event: MouseEvent | TouchEvent): void {
     this.slideCompare(event);
   }
 
+  private setSlidingState(val: boolean): void {
+    this.slidingActive = val;
+  }
+
   private slideEndHandler(): void {
     this.setSlidingState(false);
   }
 
+  /**
+   * When dblclicking the thumb, center the slider
+   */
   private centerSlider(): void {
     this.overlay = this.dynamicOverlayClipPath(50);
     this.sliderPosition = 50;
+  }
+
+  /**
+   *
+   */
+  private readingDirectionHandler(mutations: MutationRecord[]) {
+    for (const mutation of mutations) {
+      if (mutation.attributeName === 'dir') {
+        const { dir } = mutation.target as Document;
+        this.isRtl = dir === 'rtl';
+        this.overlay = this.dynamicOverlayClipPath(this.sliderPosition);
+      }
+    }
   }
 
   /**
@@ -144,6 +169,7 @@ export class ImageComparison extends LitElement {
 
     this.slideCompareHandler = this.slideCompareHandler.bind(this);
     this.slideEndHandler = this.slideEndHandler.bind(this);
+    this.readingDirectionHandler = this.readingDirectionHandler.bind(this);
   }
 
   /**
@@ -166,6 +192,15 @@ export class ImageComparison extends LitElement {
     super.connectedCallback();
 
     this.addSliderEventListener();
+
+    this.readingDirectionObserver = new MutationObserver(
+      this.readingDirectionHandler
+    );
+
+    this.readingDirectionObserver.observe(
+      this.ownerDocument?.querySelector('html')!,
+      { attributes: true }
+    );
   }
 
   /**
@@ -175,6 +210,7 @@ export class ImageComparison extends LitElement {
     super.disconnectedCallback();
 
     this.removeSliderEventListener();
+    this.readingDirectionObserver.disconnect();
   }
 
   render() {
@@ -221,6 +257,8 @@ sliderPosition: ${this.sliderPosition}
             ? -this.sliderPosition
             : this.sliderPosition}%"
           title=${this.sliderPrompt}
+          aria-valuemin="0"
+          aria-valuemax="100"
           aria-valuenow=${this.sliderPosition}
         ></button>
       </div>
