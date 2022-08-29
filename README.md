@@ -1,7 +1,14 @@
 # `<image-comparison>`
 
-Compare two images using a slider, an overlay, or a side by side view.  
+Compare two images using a slider, an overlay, or a side by side split view.  
 This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
+
+## Features
+- three variants available: [slider](#slider), [overlay](#overlay), [split](#split)
+- Right-to-left language support (document's `dir` attribute set to `ltr`/`rtl`)  
+- Keyboard controls: <kbd>ArrowLeft</kbd>, <kbd>ArrowRight</kbd>, <kbd>Home</kbd>, <kbd>End</kbd>
+- Support for labels and custom prompts
+- Further customization through [CSS variables](#css-variables)
 
 ## Installation
 
@@ -11,16 +18,22 @@ npm i image-comparison-component
 
 ## Usage
 
-```html
+### Import
+
+```javascript
+// Script
 <script type="module">
   import 'image-comparison/image-comparison.js';
 </script>
 
-<!-- 
-  Choose one of the displayed values in the 'variant' attribute
-  to change the appeareance and functionality of <image-comparison>
--->
-<image-comparison variant="slider|overlay|split">
+// Bundler
+import 'image-comparison/image-comparison.js';
+```
+
+### Slider
+
+```html
+<image-comparison variant="slider">
   <label slot="label-before">Original</label>
   <label slot="label-after">Vogue Filter</label>
 
@@ -35,8 +48,7 @@ npm i image-comparison-component
 
 ### Slots
 Slots allow you to define placeholders in your template that can be filled with any markup fragment you want.
-They are identified by their name attribute. These placeholder are meant to be used to display the images and
-you want to compare and their associated labels. Pleace add an `alt`-attribute to describe your images.
+They are identified using the 'slot' attribute. These placeholder are meant to be used to display the images you want to compare and their associated labels. Pleace add an `alt`-attribute to describe your images.
 
 | Name            | Example value                                                                   |
 |-----------------|---------------------------------------------------------------------------------|
@@ -46,11 +58,13 @@ you want to compare and their associated labels. Pleace add an `alt`-attribute t
 | `image-after`   | `<img slot="image-after" src="kasimir_filter.jpg" alt="kasimir with filter" />` |
 
 ### Attributes
-| Name            | Default                      | Description                                                                                              |
-|-----------------|------------------------------|----------------------------------------------------------------------------------------------------------|
-| `variant`       | `slider`                     | Defines the look and behaviour of this component.<br>Can be one of these: `slider`, `overlay`, `split`   |
-| `overlayPrompt` | `Tap and hold to compare`    | CSS class which is added to / removed from `tocLinkSelector`                                             |
-| `sliderPrompt`  | `Move the slider to compare` | The intersection for your TOC items.                                                                     |
+| Name            | Default                      | Description                                                                   |
+|-----------------|------------------------------|-------------------------------------------------------------------------------|
+| `variant`       | `slider`                     | Defines the look and behaviour of this component: `slider`, `overlay`, `split`|
+| `overlayPrompt` | `Tap and hold to compare`    | -                                                                             |
+| `sliderPrompt`  | `Move the slider to compare` | -                                                                             |
+| `sliderSteps`   | `5`                          | Number of steps used with keyboard controls                                   |
+| `sliderPosition`| `50`                         | Current slider position expressed in percent                                  |
 
 ### CSS variables
 Select and set the following variables to further customize this component
@@ -65,16 +79,15 @@ image-comparison {
 | `--base-radius`              | Border radius for different elements                           | `8px`                         |
 | variant: `slider`            |
 | `--thumb-size`               | The size of the button which moves the slider                  | `40px`                        |
-| `--thumb-border-width`       | The size of the button which moves the slider                  | `3px`                         |
-| `--thumb-bar-width`          | The size of the button which moves the slider                  | `--thumb-border-width`: `3px` |
-| `--slider-color`             | The size of the button which moves the slider                  | `#fff`                        |
-| `--slider-color-active`      | The size of the button which moves the slider                  | `#fff`                        |
-| `--slider-color-active`      | The size of the button which moves the slider                  | `#fff`                        |
-| `--label-background-color`   | The size of the button which moves the slider                  | `#fff`                        |
-| `--label-color`              | The size of the button which moves the slider                  | `#000`                        |
-| `--label-radius`             | The size of the button which moves the slider                  | `--base-radius`: `8px`        |
+| `--thumb-border-width`       | -                                                              | `3px`                         |
+| `--thumb-bar-width`          | The divider width                                              | `--thumb-border-width`: `3px` |
+| `--slider-color`             | The color for the thumb button and bar                         | `#fff`                        |
+| `--slider-color-active`      | The color for active states                                    | `#fff`                        |
+| `--label-background-color`   | -                                                              | `#fff`                        |
+| `--label-color`              | -                                                              | `#000`                        |
+| `--label-radius`             | -                                                              | `--base-radius`: `8px`        |
 | variant: `split`             |
-| `--split-gap`                | Gap between images when the variant attribute is set to 'split'| `--base-gap`: `16px` |
+| `--split-gap`                | Gap between images when the variant attribute is set to 'split'| `--base-gap`: `16px`          |
 
 
 ## Linting and formatting
@@ -112,7 +125,9 @@ Some websites I took inspiration from:
 - [gpucheck.de](https://gpucheck.de/rtx-on-vs-off-slideshow-vergleich/)
 - [w3schools.com](https://www.w3schools.com/howto/howto_js_image_comparison.asp)
 - [mobirise-tutorials.com](https://www.mobirise-tutorials.com/LawyerM4-Tutorials/image-comparison.html)
+- [Shoelace](https://shoelace.style/) a framework agnostic ui library, checkout their own implementation of such a component: [Image Comparer](https://shoelace.style/components/image-comparer)
 
 Useful resources:
 
 - ["What is Lit?" on the lit.dev site for more information](https://lit.dev/docs/)
+- [Open Web Components](https://open-wc.org/)
