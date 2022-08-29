@@ -39,6 +39,12 @@ export class ImageComparison extends LitElement {
   @property({ type: Number, reflect: true })
   private sliderPosition: number = 50;
 
+  /**
+   * Applied when shift is pressed with an arrow key (variant 'slider')
+   */
+  @property({ type: Number })
+  private sliderSteps: number = 5;
+
   @query('#image-container')
   private imageContainer!: HTMLDivElement;
 
@@ -93,6 +99,14 @@ export class ImageComparison extends LitElement {
   }
 
   /**
+   * Update slider position and overlay clip path
+   */
+  private updateSliderUi(pos: number): void {
+    this.sliderPosition = pos;
+    this.overlay = this.dynamicOverlayClipPath(pos);
+  }
+
+  /**
    * Converts 'cursor' position and updates the UI accordingly
    */
   private slideCompare(event: MouseEvent | TouchEvent): void {
@@ -100,8 +114,7 @@ export class ImageComparison extends LitElement {
       let pos = this.convertCursorToSliderPosition(event);
       pos = this.isRtl ? 100 - pos : pos;
 
-      this.sliderPosition = pos;
-      this.overlay = this.dynamicOverlayClipPath(pos);
+      this.updateSliderUi(pos);
     }
   }
 
@@ -118,15 +131,7 @@ export class ImageComparison extends LitElement {
   }
 
   /**
-   * When dblclicking the thumb, center the slider
-   */
-  private centerSlider(): void {
-    this.overlay = this.dynamicOverlayClipPath(50);
-    this.sliderPosition = 50;
-  }
-
-  /**
-   *
+   * Callback to handle any mutations made to the dir-attribute
    */
   private readingDirectionHandler(mutations: MutationRecord[]) {
     for (const mutation of mutations) {
@@ -136,6 +141,38 @@ export class ImageComparison extends LitElement {
         this.overlay = this.dynamicOverlayClipPath(this.sliderPosition);
       }
     }
+  }
+
+  /**
+   * Handle arrow, home & end keys and use more steps when shift is pressed
+   */
+  private keyboardHandler(event: KeyboardEvent) {
+    event.preventDefault();
+    const { key, shiftKey } = event;
+    const { isRtl } = this;
+    const isLtr = !isRtl;
+    const steps = shiftKey ? this.sliderSteps : 1;
+
+    let position = this.sliderPosition;
+
+    if ((key === 'ArrowLeft' && isLtr) || (key === 'ArrowRight' && isRtl)) {
+      position -= steps;
+    }
+
+    if ((key === 'ArrowRight' && isLtr) || (key === 'ArrowLeft' && isRtl)) {
+      position += steps;
+    }
+
+    // Also often called 'Pos1'
+    if (key === 'Home') {
+      position = 0;
+    }
+
+    if (key === 'End') {
+      position = 100;
+    }
+
+    this.updateSliderUi(clamp(position, 0, 100));
   }
 
   /**
@@ -170,10 +207,11 @@ export class ImageComparison extends LitElement {
     this.slideCompareHandler = this.slideCompareHandler.bind(this);
     this.slideEndHandler = this.slideEndHandler.bind(this);
     this.readingDirectionHandler = this.readingDirectionHandler.bind(this);
+    this.keyboardHandler = this.keyboardHandler.bind(this);
   }
 
   /**
-   * Because slider EventListener are only added when the
+   * Because slider EventListeners are only added when the
    * 'variant' attribute is set to 'slider', you also have to react to its changes
    */
   override attributeChangedCallback(
@@ -188,6 +226,10 @@ export class ImageComparison extends LitElement {
     }
   }
 
+  /**
+   * Component is added to the document's DOM,
+   * add EventListeners for variant 'slider' and setup readingDirectionObserver
+   */
   override connectedCallback(): void {
     super.connectedCallback();
 
@@ -221,9 +263,6 @@ export class ImageComparison extends LitElement {
      * └───┴─────┘
      */
     const sliderTemplate = html`
-      <pre>
-sliderPosition: ${this.sliderPosition}
-</pre>
       <div
         id="image-container"
         class=${classMap({
@@ -242,6 +281,8 @@ sliderPosition: ${this.sliderPosition}
         </div>
 
         <button
+          @keydown=${this.keyboardHandler}
+          @keyup=${() => this.setSlidingState(false)}
           @mousedown=${() => {
             this.setSlidingState(true);
           }}
@@ -251,8 +292,7 @@ sliderPosition: ${this.sliderPosition}
             this.setSlidingState(true);
           }}
           @touchmove=${(e: TouchEvent) => this.slideCompareHandler(e)}
-          @keyup=${() => this.setSlidingState(false)}
-          @dblclick=${this.centerSlider}
+          @dblclick=${() => this.updateSliderUi(50)}
           style="left: ${this.isRtl
             ? -this.sliderPosition
             : this.sliderPosition}%"
@@ -276,11 +316,11 @@ sliderPosition: ${this.sliderPosition}
         @mouseleave=${() => this.setPressed(false)}
         @touchstart=${(event: Event) => {
           event.preventDefault();
-          this.pressed = true;
+          this.setPressed(true);
         }}
         @touchend=${(event: Event) => {
           event.preventDefault();
-          this.pressed = false;
+          this.setPressed(false);
         }}
         title=${this.overlayPrompt}
         id="image-container"
