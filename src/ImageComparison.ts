@@ -11,6 +11,7 @@ import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { html, LitElement, TemplateResult } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
+import { DragEvent } from './DragEvent.js';
 import styles from './ImageComparison.styles.js';
 
 type Variants = 'overlay' | 'slider' | 'split';
@@ -128,6 +129,7 @@ export class ImageComparison extends LitElement {
 
   private slideEndHandler(): void {
     this.setSlidingState(false);
+    window.dispatchEvent(new DragEvent(this));
   }
 
   /**
