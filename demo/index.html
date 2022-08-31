@@ -58,9 +58,22 @@
         max-width: 180px;
       }
 
+      #fieldset-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: var(--base-gap);
+
+        margin: var(--base-gap) auto;
+        width: -moz-fit-content;
+        width: fit-content;
+
+        direction: ltr;
+      }
+
       fieldset {
         border: none;
-        margin: calc(var(--base-gap) * 2) auto var(--base-gap);
+        margin: 0 auto;
+        padding: 0;
         width: -moz-fit-content;
         width: fit-content;
         text-align: center;
@@ -113,68 +126,70 @@
 
     <hr />
 
-    <fieldset>
-      <legend>Variant</legend>
+    <div id="fieldset-wrapper">
+      <fieldset>
+        <legend>Variant</legend>
 
-      <div class="radio-wrapper-container">
-        <div class="radio-wrapper">
-          <input
-            checked
-            id="variant-slider"
-            name="image-comparison-variants"
-            type="radio"
-            value="slider"
-          />
-          <label for="variant-slider">Slider</label>
-        </div>
+        <div class="radio-wrapper-container">
+          <div class="radio-wrapper">
+            <input
+              checked
+              id="variant-slider"
+              name="image-comparison-variants"
+              type="radio"
+              value="slider"
+            />
+            <label for="variant-slider">Slider</label>
+          </div>
 
-        <div class="radio-wrapper">
-          <input
-            id="variant-overlay"
-            name="image-comparison-variants"
-            type="radio"
-            value="overlay"
-          />
-          <label for="variant-overlay">Overlay</label>
-        </div>
+          <div class="radio-wrapper">
+            <input
+              id="variant-overlay"
+              name="image-comparison-variants"
+              type="radio"
+              value="overlay"
+            />
+            <label for="variant-overlay">Overlay</label>
+          </div>
 
-        <div class="radio-wrapper">
-          <input
-            id="variant-split"
-            name="image-comparison-variants"
-            type="radio"
-            value="split"
-          />
-          <label for="variant-split">Split view</label>
+          <div class="radio-wrapper">
+            <input
+              id="variant-split"
+              name="image-comparison-variants"
+              type="radio"
+              value="split"
+            />
+            <label for="variant-split">Split view</label>
+          </div>
         </div>
-      </div>
-    </fieldset>
+      </fieldset>
 
-    <fieldset>
-      <legend>Reading direction</legend>
-      <div class="radio-wrapper-container">
-        <div class="radio-wrapper">
-          <input
-            checked
-            id="dir-ltr"
-            name="image-comparison-reading-direction"
-            type="radio"
-            value="ltr"
-          />
-          <label for="dir-ltr" title="left to right">ltr</label>
-        </div>
+      <fieldset>
+        <legend>Reading direction</legend>
+        <div class="radio-wrapper-container">
+          <div class="radio-wrapper">
+            <input
+              checked
+              id="dir-ltr"
+              name="image-comparison-reading-direction"
+              type="radio"
+              value="ltr"
+            />
+            <label for="dir-ltr" title="left to right">ltr</label>
+          </div>
 
-        <div class="radio-wrapper">
-          <input
-            id="dir-rtl"
-            name="image-comparison-reading-direction"
-            type="radio"
-            value="rtl"
-          />
-          <label for="dir-rtl" title="right to left">rtl</label>
+          <div class="radio-wrapper">
+            <input
+              id="dir-rtl"
+              name="image-comparison-reading-direction"
+              type="radio"
+              value="rtl"
+            />
+            <label for="dir-rtl" title="right to left">rtl</label>
+          </div>
         </div>
-      </div>
-    </fieldset>
+      </fieldset>
+    </div>
 
     <div id="demo"></div>
 
