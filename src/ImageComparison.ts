@@ -55,8 +55,8 @@ export class ImageComparison extends LitElement {
   @state()
   private isRtl: boolean = false;
 
-  @state()
-  private overlay: string = this.dynamicOverlayClipPath(50);
+  // @state()
+  // private overlay: string = this.dynamicOverlayClipPath(50);
 
   @state()
   private pressed = false;
@@ -87,27 +87,6 @@ export class ImageComparison extends LitElement {
   }
 
   /**
-   * Inline 'clip-path' to mask images
-   */
-  private dynamicOverlayClipPath(xPos: number): string {
-    /**
-     * 'inset' does not define logical but physical offsets
-     * (top right bottom left).
-     */
-    return this.isRtl
-      ? `clip-path: inset(0 ${xPos}% 0 0)`
-      : `clip-path: inset(0 0 0 ${xPos}%)`;
-  }
-
-  /**
-   * Update slider position and overlay clip path
-   */
-  private updateSliderUi(pos: number): void {
-    this.sliderPosition = pos;
-    this.overlay = this.dynamicOverlayClipPath(pos);
-  }
-
-  /**
    * Converts 'cursor' position and updates the UI accordingly
    */
   private slideCompare(event: MouseEvent | TouchEvent): void {
@@ -115,7 +94,7 @@ export class ImageComparison extends LitElement {
       let pos = this.convertCursorToSliderPosition(event);
       pos = this.isRtl ? 100 - pos : pos;
 
-      this.updateSliderUi(pos);
+      this.sliderPosition = pos;
     }
   }
 
@@ -140,7 +119,6 @@ export class ImageComparison extends LitElement {
       if (mutation.attributeName === 'dir') {
         const { dir } = mutation.target as Document;
         this.isRtl = dir === 'rtl';
-        this.overlay = this.dynamicOverlayClipPath(this.sliderPosition);
       }
     }
   }
@@ -174,7 +152,7 @@ export class ImageComparison extends LitElement {
       position = 100;
     }
 
-    this.updateSliderUi(clamp(position, 0, 100));
+    this.sliderPosition = clamp(position, 0, 100);
   }
 
   /**
@@ -278,7 +256,12 @@ export class ImageComparison extends LitElement {
         <div id="container-before">
           <slot name="image-before"></slot>
         </div>
-        <div id="container-after" style=${this.overlay}>
+        <div
+          id="container-after"
+          style=${this.isRtl
+            ? `clip-path: inset(0 ${this.sliderPosition}% 0 0)`
+            : `clip-path: inset(0 0 0 ${this.sliderPosition}%)`}
+        >
           <slot name="image-after"></slot>
         </div>
 
@@ -294,7 +277,7 @@ export class ImageComparison extends LitElement {
             this.setSlidingState(true);
           }}
           @touchmove=${(e: TouchEvent) => this.slideCompareHandler(e)}
-          @dblclick=${() => this.updateSliderUi(50)}
+          @dblclick=${() => (this.sliderPosition = 50)}
           style="left: ${this.isRtl
             ? -this.sliderPosition
             : this.sliderPosition}%"

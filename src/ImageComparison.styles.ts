@@ -130,6 +130,7 @@ export default css`
 
   /**
    * Overlay
+   * ===============================================
    */
   :host([variant='overlay']) {
     cursor: pointer;
@@ -171,6 +172,7 @@ export default css`
 
   /**
    * Split
+   * ===============================================
    */
   :host([variant='split']) #image-container {
     column-gap: var(--split-gap);
