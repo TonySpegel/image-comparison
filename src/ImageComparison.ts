@@ -282,6 +282,7 @@ export class ImageComparison extends LitElement {
             ? -this.sliderPosition
             : this.sliderPosition}%"
           title=${this.sliderPrompt}
+          aria-controls="image-container"
           aria-valuemin="0"
           aria-valuemax="100"
           aria-valuenow=${this.sliderPosition}
