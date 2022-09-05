@@ -47,6 +47,9 @@ import 'image-comparison/image-comparison.js';
 ```
 
 ### Split
+
+![side by side split view variant](https://user-images.githubusercontent.com/1145514/188476603-60f377b4-3640-4144-aea7-f691c34bb126.png)
+
 "Split" is the simplest of the three variants, as it simply displays both images side by side or one below the other, 
 and does not provide any form of interaction. 
 You can set its columns minimum and maximum width (`--split-column-min-width`, `--split-column-max-width`) 
