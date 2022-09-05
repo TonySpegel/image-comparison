@@ -46,6 +46,12 @@ import 'image-comparison/image-comparison.js';
 </image-comparison>
 ```
 
+### Split
+"Split" is the simplest of the three variants, as it simply displays both images side by side or one below the other, 
+and does not provide any form of interaction. 
+You can set its columns minimum and maximum width (`--split-column-min-width`, `--split-column-max-width`) 
+as well as its column spacing (`--split-gap`). At least one of the column variables must be a fixed length.
+
 ### Slots
 Slots allow you to define placeholders in your template that can be filled with any markup fragment you want.
 They are identified using the 'slot' attribute. These placeholder are meant to be used to display the images you want to compare and their associated labels. Pleace add an `alt`-attribute to describe your images.
@@ -74,20 +80,22 @@ image-comparison {
 }
 ```
 | Variable                     | Purpose                                                        | Default value                 |
-|------------------------------|----------------------------------------------------------------|-------------------------------|
-| `--base-gap`                 | Spacing for paddings, margins & gaps                           | `16px`                        |
-| `--base-radius`              | Border radius for different elements                           | `8px`                         |
+|------------------------------|-----------------------------------------------|-------------------------------|
+| `--base-gap`                 | Spacing for paddings, margins & gaps          | `16px`                        |
+| `--base-radius`              | Border radius for different elements          | `8px`                         |
 | variant: `slider`            |
-| `--thumb-size`               | The size of the button which moves the slider                  | `40px`                        |
-| `--thumb-border-width`       | -                                                              | `3px`                         |
-| `--thumb-bar-width`          | The divider width                                              | `--thumb-border-width`: `3px` |
-| `--slider-color`             | The color for the thumb button and bar                         | `#fff`                        |
-| `--slider-color-active`      | The color for active states                                    | `#fff`                        |
-| `--label-background-color`   | -                                                              | `#fff`                        |
-| `--label-color`              | -                                                              | `#000`                        |
-| `--label-radius`             | -                                                              | `--base-radius`: `8px`        |
+| `--thumb-size`               | The size of the button which moves the slider | `40px`                        |
+| `--thumb-border-width`       | -                                             | `3px`                         |
+| `--thumb-bar-width`          | The divider width                             | `--thumb-border-width`: `3px` |
+| `--slider-color`             | The color for the thumb button and bar        | `#fff`                        |
+| `--slider-color-active`      | The color for active states                   | `#fff`                        |
+| `--label-background-color`   | -                                             | `#fff`                        |
+| `--label-color`              | -                                             | `#000`                        |
+| `--label-radius`             | -                                             | `--base-radius`: `8px`        |
 | variant: `split`             |
-| `--split-gap`                | Gap between images when the variant attribute is set to 'split'| `--base-gap`: `16px`          |
+| `--split-gap`                | Gap between images                            | `--base-gap`: `16px`          |
+| `--split-column-min-width`   | Min width of a split column                   | `200px`                       |
+| `--split-column-max-width`   | Max width of a split column                   | `1fr`                         |
 
 
 ## Linting and formatting

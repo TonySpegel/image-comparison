@@ -55,15 +55,8 @@ export class ImageComparison extends LitElement {
   @state()
   private isRtl: boolean = false;
 
-  // @state()
-  // private overlay: string = this.dynamicOverlayClipPath(50);
-
   @state()
   private pressed = false;
-
-  private setPressed(val: boolean): void {
-    this.pressed = val;
-  }
 
   private readingDirectionObserver!: MutationObserver;
 
@@ -297,16 +290,16 @@ export class ImageComparison extends LitElement {
      */
     const overlayTemplate = html`
       <div
-        @mousedown=${() => this.setPressed(true)}
-        @mouseup=${() => this.setPressed(false)}
-        @mouseleave=${() => this.setPressed(false)}
+        @mousedown=${() => (this.pressed = true)}
+        @mouseup=${() => (this.pressed = false)}
+        @mouseleave=${() => (this.pressed = false)}
         @touchstart=${(event: Event) => {
           event.preventDefault();
-          this.setPressed(true);
+          this.pressed = true;
         }}
         @touchend=${(event: Event) => {
           event.preventDefault();
-          this.setPressed(false);
+          this.pressed = false;
         }}
         title=${this.overlayPrompt}
         id="image-container"
@@ -328,10 +321,14 @@ export class ImageComparison extends LitElement {
      */
     const splitTemplate = html`
       <div id="image-container">
-        <slot name="label-before"></slot>
-        <slot name="label-after"></slot>
-        <slot name="image-before"></slot>
-        <slot name="image-after"></slot>
+        <div class="container-split-column">
+          <slot name="image-before"></slot>
+          <slot name="label-before"></slot>
+        </div>
+        <div class="container-split-column">
+          <slot name="image-after"></slot>
+          <slot name="label-after"></slot>
+        </div>
       </div>
     `;
 

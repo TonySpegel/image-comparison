@@ -12,11 +12,14 @@ import { css } from 'lit';
 export default css`
   :host {
     --base-gap: 16px;
-    --split-gap: var(--base-gap);
     --base-radius: 8px;
 
     --slider-color: #fff;
     --slider-color-active: #fff;
+
+    --split-gap: var(--base-gap);
+    --split-column-min-width: 200px;
+    --split-column-max-width: 1fr;
 
     --thumb-size: 40px;
     --thumb-border-width: 3px;
@@ -42,7 +45,6 @@ export default css`
    */
   ::slotted([slot^='label-']) {
     grid-area: images;
-    align-self: flex-end;
     z-index: 4;
 
     margin: calc(var(--base-gap) / 2);
@@ -56,6 +58,11 @@ export default css`
 
     background-color: var(--label-background-color);
     color: var(--label-color);
+  }
+
+  :host(:is([variant='slider'], [variant='overlay']))
+    ::slotted([slot^='label-']) {
+    align-self: flex-end;
   }
 
   /**
@@ -78,6 +85,18 @@ export default css`
 
   #image-container.rtl button {
     transform: translateX(50%);
+  }
+
+  #container-after {
+    will-change: clip;
+    z-index: 2;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  #container-before,
+  #container-after {
+    grid-area: images;
   }
 
   button {
@@ -175,43 +194,19 @@ export default css`
    * ===============================================
    */
   :host([variant='split']) #image-container {
-    column-gap: var(--split-gap);
-
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-      'image-before image-after'
-      'label-before label-after';
+    gap: var(--split-gap);
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(var(--split-column-min-width), var(--split-column-max-width))
+    );
   }
 
-  :host([variant='split']) ::slotted([slot='image-before']) {
-    grid-area: image-before;
-  }
-
-  :host([variant='split']) ::slotted([slot='image-after']) {
-    grid-area: image-after;
+  :host([variant='split']) .container-split-column {
+    display: flex;
+    flex-direction: column;
   }
 
   :host([variant='split']) ::slotted([slot^='label-']) {
     opacity: 1;
-  }
-
-  :host([variant='split']) ::slotted([slot='label-before']) {
-    grid-area: label-before;
-  }
-
-  :host([variant='split']) ::slotted([slot='label-after']) {
-    grid-area: label-after;
-  }
-
-  #container-after {
-    will-change: clip;
-    z-index: 2;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  #container-before,
-  #container-after {
-    grid-area: images;
   }
 `;
