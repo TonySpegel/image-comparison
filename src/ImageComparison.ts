@@ -117,9 +117,22 @@ export class ImageComparison extends LitElement {
   }
 
   /**
+   * Used with overlay variant to compare images 
+   * with the 'Space' or 'Enter' key
+   */
+  private keyboardOverlayHandler(event: KeyboardEvent): void {
+    event.preventDefault();
+    const { key, code } = event;
+
+    if (code === 'Space' || key === 'Enter') {
+      this.pressed = true;
+    }
+  }
+
+  /**
    * Handle arrow, home & end keys and use more steps when shift is pressed
    */
-  private keyboardHandler(event: KeyboardEvent) {
+  private keyboardHandler(event: KeyboardEvent): void {
     event.preventDefault();
     const { key, shiftKey } = event;
     const { isRtl } = this;
@@ -290,6 +303,8 @@ export class ImageComparison extends LitElement {
      */
     const overlayTemplate = html`
       <div
+        @keydown=${this.keyboardOverlayHandler}
+        @keyup=${() => (this.pressed = false)}
         @mousedown=${() => (this.pressed = true)}
         @mouseup=${() => (this.pressed = false)}
         @mouseleave=${() => (this.pressed = false)}
@@ -301,6 +316,7 @@ export class ImageComparison extends LitElement {
           event.preventDefault();
           this.pressed = false;
         }}
+        tabindex="0"
         title=${this.overlayPrompt}
         id="image-container"
         class="${this.pressed ? 'pressed' : ''}"

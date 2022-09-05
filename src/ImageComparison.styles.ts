@@ -17,6 +17,8 @@ export default css`
     --slider-color: #fff;
     --slider-color-active: #fff;
 
+    --overlay-focus-offset: calc(var(--base-gap) / 2);
+
     --split-gap: var(--base-gap);
     --split-column-min-width: 200px;
     --split-column-max-width: 1fr;
@@ -153,6 +155,10 @@ export default css`
    */
   :host([variant='overlay']) {
     cursor: pointer;
+  }
+
+  :host([variant='overlay']) #image-container {
+    outline-offset: var(--overlay-focus-offset);
   }
 
   :host([variant='overlay']) ::slotted(img),

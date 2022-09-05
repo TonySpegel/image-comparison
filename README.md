@@ -6,8 +6,10 @@ This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) reco
 ## Features
 - three variants available: [slider](#slider), [overlay](#overlay), [split](#split)
 - Right-to-left language support (document's `dir` attribute set to `ltr`/`rtl`)  
-- Keyboard controls: <kbd>ArrowLeft</kbd>, <kbd>ArrowRight</kbd>, <kbd>Home</kbd>, <kbd>End</kbd>
-- Support for labels and custom prompts
+- Keyboard controls: 
+  - Slider: <kbd>ArrowLeft</kbd> / <kbd>ArrowRight</kbd> (<kbd>Shift +</kbd> for increased [steps](#attributes)), <kbd>Home</kbd> (sometimes <kbd>Pos1</kbd>) / <kbd>End</kbd>.
+  - Overlay: when in focus press <kbd>Enter</kbd> / <kbd>Space</kbd> to compare
+- Support for [labels](#slots) and [custom prompts](#attributes)
 - Further customization through [CSS variables](#css-variables)
 
 ## Installation
@@ -46,6 +48,11 @@ import 'image-comparison/image-comparison.js';
 </image-comparison>
 ```
 
+### Overlay
+The "overlay" variant can be used to compare images with a tap/press and hold action or pressing 
+the <kbd>Enter</kbd> / <kbd>Space</kbd> key when in focus. Its focus-ring offset can be adjusted using the
+`--overlay-focus-offset` variable.
+
 ### Split
 
 ![side by side split view variant](https://user-images.githubusercontent.com/1145514/188476603-60f377b4-3640-4144-aea7-f691c34bb126.png)
@@ -72,7 +79,7 @@ They are identified using the 'slot' attribute. These placeholder are meant to b
 | `variant`       | `slider`                     | Defines the look and behaviour of this component: `slider`, `overlay`, `split`|
 | `overlayPrompt` | `Tap and hold to compare`    | -                                                                             |
 | `sliderPrompt`  | `Move the slider to compare` | -                                                                             |
-| `sliderSteps`   | `5`                          | Number of steps used with keyboard controls                                   |
+| `sliderSteps`   | `5`                          | Number of steps used with   <kbd>Shift + ArrowLeft/ArrowRight</kbd>           |
 | `sliderPosition`| `50`                         | Current slider position expressed in percent                                  |
 
 ### CSS variables
@@ -86,7 +93,7 @@ image-comparison {
 |------------------------------|-----------------------------------------------|-------------------------------|
 | `--base-gap`                 | Spacing for paddings, margins & gaps          | `16px`                        |
 | `--base-radius`              | Border radius for different elements          | `8px`                         |
-| variant: `slider`            |
+| variant: [slider](#slider)   |
 | `--thumb-size`               | The size of the button which moves the slider | `40px`                        |
 | `--thumb-border-width`       | -                                             | `3px`                         |
 | `--thumb-bar-width`          | The divider width                             | `--thumb-border-width`: `3px` |
@@ -95,7 +102,9 @@ image-comparison {
 | `--label-background-color`   | -                                             | `#fff`                        |
 | `--label-color`              | -                                             | `#000`                        |
 | `--label-radius`             | -                                             | `--base-radius`: `8px`        |
-| variant: `split`             |
+| variant: [overlay](#overlay) |
+| `--overlay-focus-offset`     | Offset value for focus ring around the image  | `--base-gap / 2`              |
+| variant: [split](#split)     |
 | `--split-gap`                | Gap between images                            | `--base-gap`: `16px`          |
 | `--split-column-min-width`   | Min width of a split column                   | `200px`                       |
 | `--split-column-max-width`   | Max width of a split column                   | `1fr`                         |
