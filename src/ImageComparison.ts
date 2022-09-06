@@ -128,6 +128,10 @@ export class ImageComparison extends LitElement {
   private keyboardOverlayHandler(event: KeyboardEvent): void {
     const { key, code } = event;
 
+    if (code === 'Space') {
+      event.preventDefault();
+    }
+
     if (code === 'Space' || key === 'Enter') {
       this.pressed = true;
     }
@@ -137,13 +141,16 @@ export class ImageComparison extends LitElement {
    * Handle arrow, home & end keys and use more steps when shift is pressed
    */
   private keyboardHandler(event: KeyboardEvent): void {
-    event.preventDefault();
-    const { key, shiftKey } = event;
+    const { code, key, shiftKey } = event;
     const { isRtl } = this;
     const isLtr = !isRtl;
     const steps = shiftKey ? this.sliderSteps : 1;
 
     let position = this.sliderPosition;
+
+    if (code === 'Space' || key === 'Home' || key === 'End') {
+      event.preventDefault();
+    }
 
     if ((key === 'ArrowLeft' && isLtr) || (key === 'ArrowRight' && isRtl)) {
       position -= steps;
