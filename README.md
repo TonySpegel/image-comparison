@@ -106,7 +106,7 @@ image-comparison {
 | `--overlay-focus-offset`     | Offset value for focus ring around the image  | `--base-gap / 2`              |
 | variant: [split](#split)     |
 | `--split-gap`                | Gap between images                            | `--base-gap`: `16px`          |
-| `--split-column-min-width`   | Min width of a split column                   | `200px`                       |
+| `--split-column-min-width`   | Min width of a split column                   | `100px`                       |
 | `--split-column-max-width`   | Max width of a split column                   | `1fr`                         |
 
 

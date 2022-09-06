@@ -20,7 +20,7 @@ export default css`
     --overlay-focus-offset: calc(var(--base-gap) / 2);
 
     --split-gap: var(--base-gap);
-    --split-column-min-width: 200px;
+    --split-column-min-width: 100px;
     --split-column-max-width: 1fr;
 
     --thumb-size: 40px;

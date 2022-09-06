@@ -11,7 +11,7 @@ import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { html, LitElement, TemplateResult } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-import { DragEvent } from './DragEvent.js';
+import { DragEvent, PressEvent } from './index.js';
 import styles from './ImageComparison.styles.js';
 
 type Variants = 'overlay' | 'slider' | 'split';
@@ -59,6 +59,11 @@ export class ImageComparison extends LitElement {
   private pressed = false;
 
   private readingDirectionObserver!: MutationObserver;
+
+  private setPressed(value: boolean): void {
+    this.pressed = value;
+    window.dispatchEvent(new PressEvent(this, value));
+  }
 
   /**
    * The relative position of a cursor (as in: a touch or mouse device)
@@ -117,7 +122,7 @@ export class ImageComparison extends LitElement {
   }
 
   /**
-   * Used with overlay variant to compare images 
+   * Used with overlay variant to compare images
    * with the 'Space' or 'Enter' key
    */
   private keyboardOverlayHandler(event: KeyboardEvent): void {
@@ -210,6 +215,10 @@ export class ImageComparison extends LitElement {
     if (name === 'variant' && newVal !== oldVal && newVal === 'slider') {
       this.addSliderEventListener();
     }
+
+    if (name === 'variant' && newVal !== oldVal && newVal === 'overlay') {
+      this.removeSliderEventListener();
+    }
   }
 
   /**
@@ -283,7 +292,9 @@ export class ImageComparison extends LitElement {
             this.setSlidingState(true);
           }}
           @touchmove=${(e: TouchEvent) => this.slideCompareHandler(e)}
-          @dblclick=${() => (this.sliderPosition = 50)}
+          @dblclick=${() => {
+            this.sliderPosition = 50;
+          }}
           style="left: ${this.isRtl
             ? -this.sliderPosition
             : this.sliderPosition}%"
@@ -304,17 +315,25 @@ export class ImageComparison extends LitElement {
     const overlayTemplate = html`
       <div
         @keydown=${this.keyboardOverlayHandler}
-        @keyup=${() => (this.pressed = false)}
-        @mousedown=${() => (this.pressed = true)}
-        @mouseup=${() => (this.pressed = false)}
-        @mouseleave=${() => (this.pressed = false)}
+        @keyup=${() => {
+          this.setPressed(false);
+        }}
+        @mousedown=${() => {
+          this.setPressed(true);
+        }}
+        @mouseup=${() => {
+          this.setPressed(false);
+        }}
+        @mouseleave=${() => {
+          this.setPressed(false);
+        }}
         @touchstart=${(event: Event) => {
           event.preventDefault();
-          this.pressed = true;
+          this.setPressed(true);
         }}
         @touchend=${(event: Event) => {
           event.preventDefault();
-          this.pressed = false;
+          this.setPressed(false);
         }}
         tabindex="0"
         title=${this.overlayPrompt}
