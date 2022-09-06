@@ -126,7 +126,6 @@ export class ImageComparison extends LitElement {
    * with the 'Space' or 'Enter' key
    */
   private keyboardOverlayHandler(event: KeyboardEvent): void {
-    event.preventDefault();
     const { key, code } = event;
 
     if (code === 'Space' || key === 'Enter') {
