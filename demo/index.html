@@ -22,7 +22,10 @@
 
       :where(html) {
         --base-gap: 16px;
+        --base-radius: 8px;
         --lilac: hsl(262, 47%, 55%);
+        --simple-shadow: 0 3px 5px -2px hsl(220 3% 15% / 4%),
+          0 7px 14px -5px hsl(220 3% 15% / 6%);
         margin: 0;
         padding: 0;
         line-height: calc(0.25rem + 1em + 0.25rem);
@@ -116,6 +119,44 @@
         right: 0;
         direction: ltr;
       }
+
+      #key-holder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--base-gap);
+
+        position: fixed;
+        left: 50%;
+        transform: translate(-50%);
+
+        margin-block-start: 20px;
+        border-radius: var(--base-radius);
+        border: 1px solid #e0e0e0;
+        padding: var(--base-gap);
+        width: 250px;
+        height: 90px;
+
+        background-color: #fafafa;
+        box-shadow: var(--simple-shadow);
+      }
+
+      kbd {
+        display: flex;
+        justify-content: center;
+        border-radius: var(--base-radius);
+        background-color: hsla(281, 56%, 84%, 1);
+        box-shadow: var(--simple-shadow);
+      }
+
+      .key-surface {
+        border-radius: var(--base-radius);
+        padding: var(--base-gap);
+        transform: translateY(calc((var(--base-radius) / 2) * -1));
+
+        font-weight: bold;
+        background-color: hsla(281, 47%, 90%, 1);
+      }
     </style>
   </head>
   <body>
@@ -193,6 +234,10 @@
 
     <div id="demo"></div>
 
+    <div id="key-holder">
+      <span>Keyboard Keys</span>
+    </div>
+
     <span id="copyright-notice">© 2022 Tony Spegel</span>
 
     <script type="module">
@@ -240,6 +285,57 @@
           document.querySelector('html').setAttribute('dir', value);
         });
       });
+    </script>
+
+    <script>
+      const keyElement = document.querySelector('#key-holder');
+      const defaultContent = '<span>Keyboard Keys</span>';
+
+      const keyTemplate = keys =>
+        [...keys]
+          .map(key => `<kbd><div class="key-surface">${key}</div></kbd>`)
+          .toString()
+          .replace(',', ' + ');
+
+      let keys = '';
+
+      const keyboardHandler = event => {
+        const { code, key, shiftKey } = event;
+
+        if (!shiftKey && key === 'ArrowLeft') {
+          keys = keyTemplate(['ArrowLeft']);
+        }
+
+        if (!shiftKey && key === 'ArrowRight') {
+          keys = keyTemplate(['ArrowRight']);
+        }
+
+        if (shiftKey && key === 'ArrowLeft') {
+          keys = keyTemplate(['Shift', 'ArrowLeft']);
+        }
+
+        if (shiftKey && key === 'ArrowRight') {
+          keys = keyTemplate(['Shift', 'ArrowRight']);
+        }
+
+        if (key === 'Enter') {
+          keys = keyTemplate(['Enter']);
+        }
+
+        if (code === 'Space') {
+          event.preventDefault();
+          keys = keyTemplate(['Space']);
+        }
+
+        keyElement.innerHTML = keys;
+      };
+
+      window.addEventListener('keydown', keyboardHandler);
+      window.addEventListener('keyup', () => {
+        setTimeout(() => {
+          keyElement.innerHTML = defaultContent;  
+        }, 2000);
+      })
     </script>
   </body>
 </html>
