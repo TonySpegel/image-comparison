@@ -9,6 +9,7 @@ This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) reco
 - Keyboard controls: 
   - Slider: <kbd>ArrowLeft</kbd> / <kbd>ArrowRight</kbd> (<kbd>Shift +</kbd> for increased [steps](#attributes)), <kbd>Home</kbd> (sometimes <kbd>Pos1</kbd>) / <kbd>End</kbd>.
   - Overlay: when in focus press <kbd>Enter</kbd> / <kbd>Space</kbd> to compare
+- [Custom events](#custom-events)
 - Support for [labels](#slots) and [custom prompts](#attributes)
 - Further customization through [CSS variables](#css-variables)
 
@@ -84,11 +85,7 @@ They are identified using the 'slot' attribute. These placeholder are meant to b
 
 ### CSS variables
 Select and set the following variables to further customize this component
-```css
-image-comparison {
-  --thumb-size: 30px;
-}
-```
+
 | Variable                     | Purpose                                                        | Default value                 |
 |------------------------------|-----------------------------------------------|-------------------------------|
 | `--base-gap`                 | Spacing for paddings, margins & gaps          | `16px`                        |
@@ -109,6 +106,37 @@ image-comparison {
 | `--split-column-min-width`   | Min width of a split column                   | `100px`                       |
 | `--split-column-max-width`   | Max width of a split column                   | `1fr`                         |
 
+Example usage:
+```css
+image-comparison {
+  --thumb-size: 30px;
+}
+```
+
+### Custom events
+There are two custom events you can listen to:
+```typescript
+DragEvent {
+  type: 'drag-event',
+  targetElement {
+    // ...
+    sliderPosition: 73,
+  }
+}
+```
+and
+```typescript
+PressEvent {
+  type: 'press-event',
+  targetElement {},
+  pressed: true
+}
+```
+Example usage:
+```javascript
+window.addEventListener('press-event', (e) => console.log(e));
+// PressEvent {isTrusted: false, pressed: false, targetElement: image-comparison, type: 'press-event', target: Window, …}
+```
 
 ## Linting and formatting
 
