@@ -17,6 +17,7 @@ export default css`
     --slider-color: #fff;
     --slider-color-active: #fff;
 
+    --overlay-focus-color: initial;
     --overlay-focus-offset: calc(var(--base-gap) / 2);
 
     --split-gap: var(--base-gap);
@@ -158,6 +159,7 @@ export default css`
   }
 
   :host([variant='overlay']) #image-container {
+    outline-color: var(--overlay-focus-color);
     outline-offset: var(--overlay-focus-offset);
   }
 
