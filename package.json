@@ -25,7 +25,7 @@
     "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore && prettier \"**/*.ts\" --write --ignore-path .gitignore"
   },
   "dependencies": {
-    "lit": "^2.2.8"
+    "lit": "^2.3.1"
   },
   "devDependencies": {
     "@open-wc/eslint-config": "^4.3.0",
