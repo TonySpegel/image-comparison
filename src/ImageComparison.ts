@@ -141,7 +141,7 @@ export class ImageComparison extends LitElement {
    * Handle arrow, home & end keys and use more steps when shift is pressed
    */
   private keyboardHandler(event: KeyboardEvent): void {
-    const { code, key, shiftKey } = event;
+    const { code, key, ctrlKey, metaKey, shiftKey } = event;
     const { isRtl } = this;
     const isLtr = !isRtl;
     const steps = shiftKey ? this.sliderSteps : 1;
@@ -160,12 +160,13 @@ export class ImageComparison extends LitElement {
       position += steps;
     }
 
-    // Also often called 'Pos1'
-    if (key === 'Home') {
+    // Also often called 'Pos1' or '⌘ + ←' on MacOS
+    if (key === 'Home' || ((metaKey || ctrlKey) && key === 'ArrowLeft')) {
       position = 0;
     }
 
-    if (key === 'End') {
+    // End or '⌘ + →' on MacOS
+    if (key === 'End' || ((metaKey || ctrlKey) && key === 'ArrowRight')) {
       position = 100;
     }
 
@@ -265,6 +266,10 @@ export class ImageComparison extends LitElement {
      */
     const sliderTemplate = html`
       <div
+        @mousedown=${(e: MouseEvent) => {
+          this.setSlidingState(true);
+          this.slideCompareHandler(e);
+        }}
         id="image-container"
         class=${classMap({
           'sliding-active': this.slidingActive,
