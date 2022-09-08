@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Tony Spegel" />
     <meta name="theme-color" content="hsl(262, 47%, 55%)" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+    />
 
     <title>&ltimage-comparison/> Demo</title>
     <style>
@@ -58,6 +62,7 @@
       hr {
         border: 1px solid var(--lilac);
         background-color: var(--lilac);
+        margin-block-start: 12px;
         max-width: 180px;
       }
 
@@ -102,10 +107,16 @@
         margin: 0;
       }
 
-      image-comparison {
+      main {
+        display: grid;
+        gap: var(--base-gap);
+        grid-template-rows: minmax(200px, 1fr) auto;
         margin: 0 auto;
-        max-width: 100%;
-        width: 500px;
+        max-width: 500px;
+      }
+
+      image-comparison {
+        --overlay-focus-color: var(--lilac);
       }
 
       img {
@@ -126,15 +137,13 @@
         justify-content: center;
         gap: var(--base-gap);
 
-        position: fixed;
-        left: 50%;
-        transform: translate(-50%);
-
-        margin-block-start: 20px;
         border-radius: var(--base-radius);
         border: 1px solid #e0e0e0;
         padding: var(--base-gap);
-        width: 250px;
+
+        margin: 0 auto;
+        max-width: 250px;
+        width: 100%;
         height: 90px;
 
         background-color: #fafafa;
@@ -149,7 +158,12 @@
         box-shadow: var(--simple-shadow);
       }
 
+      #plus {
+        transform: translateY(calc((var(--base-radius) / 2) * -1));
+      }
+
       .key-surface {
+        display: flex;
         border-radius: var(--base-radius);
         padding: var(--base-gap);
         transform: translateY(calc((var(--base-radius) / 2) * -1));
@@ -161,9 +175,11 @@
   </head>
   <body>
     <h1>&ltimage-comparison></h1>
+    <!--
     <span role="doc-subtitle"
       >Compare two images using a slider, an overlay, or a split view</span
     >
+    -->
 
     <hr />
 
@@ -231,12 +247,14 @@
         </div>
       </fieldset>
     </div>
+    
+    <main>
+      <div id="demo"></div>
 
-    <div id="demo"></div>
-
-    <div id="key-holder">
-      <span>Keyboard Keys</span>
-    </div>
+      <div id="key-holder">
+        <span>Keyboard Keys</span>
+      </div>
+    </main>
 
     <span id="copyright-notice">© 2022 Tony Spegel</span>
 
@@ -290,41 +308,66 @@
     <script>
       const keyElement = document.querySelector('#key-holder');
       const defaultContent = '<span>Keyboard Keys</span>';
+      const modifierKeyTemplate = key => `<kbd>
+        <div class="key-surface">
+          ${key}
+        </div>
+      </kbd>
+      `;
 
-      const keyTemplate = keys =>
+      const keyTemplate = (keys, shift) =>
         [...keys]
-          .map(key => `<kbd><div class="key-surface">${key}</div></kbd>`)
+          .map(
+            key => `${shift ? ',' : ''} <kbd>
+            <div class="key-surface">
+              <span class="material-symbols-outlined">${key}</span>
+            </div>
+          </kbd>`
+          )
           .toString()
-          .replace(',', ' + ');
+          .replace(',', '<span id="plus">+</span>');
 
       let keys = '';
 
       const keyboardHandler = event => {
-        const { code, key, shiftKey } = event;
+        const { code, key, ctrlKey, metaKey, shiftKey } = event;
+
+        keyElement.innerHTML = defaultContent;
+        keys = '';
 
         if (!shiftKey && key === 'ArrowLeft') {
-          keys = keyTemplate(['ArrowLeft']);
+          keys = keyTemplate(['arrow_back']);
         }
 
         if (!shiftKey && key === 'ArrowRight') {
-          keys = keyTemplate(['ArrowRight']);
+          keys = keyTemplate(['arrow_forward']);
         }
 
         if (shiftKey && key === 'ArrowLeft') {
-          keys = keyTemplate(['Shift', 'ArrowLeft']);
+          keys =
+            modifierKeyTemplate('Shift') + keyTemplate(['arrow_back'], true);
         }
 
         if (shiftKey && key === 'ArrowRight') {
-          keys = keyTemplate(['Shift', 'ArrowRight']);
+          keys =
+            modifierKeyTemplate('Shift') + keyTemplate(['arrow_forward'], true);
+        }
+
+        if (ctrlKey && key === 'ArrowLeft') {
+          keys = modifierKeyTemplate('Pos1');
+        }
+
+        if (ctrlKey && key === 'ArrowRight') {
+          keys = modifierKeyTemplate('End');
         }
 
         if (key === 'Enter') {
-          keys = keyTemplate(['Enter']);
+          keys = keyTemplate(['keyboard_return']);
         }
 
         if (code === 'Space') {
           event.preventDefault();
-          keys = keyTemplate(['Space']);
+          keys = keyTemplate(['space_bar']);
         }
 
         keyElement.innerHTML = keys;
@@ -333,9 +376,9 @@
       window.addEventListener('keydown', keyboardHandler);
       window.addEventListener('keyup', () => {
         setTimeout(() => {
-          keyElement.innerHTML = defaultContent;  
-        }, 2000);
-      })
+          keyElement.innerHTML = defaultContent;
+        }, 1000);
+      });
     </script>
   </body>
 </html>
