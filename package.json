@@ -2,14 +2,15 @@
   "name": "image-comparison-component",
   "description": "Compare two images using a slider, an overlay, or a side by side view",
   "license": "MIT",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Tony Spegel",
   "keywords": [
     "image-comparison",
     "lit",
     "lit-element",
     "typescript",
-    "web-components"
+    "web-components",
+    "MutationObserver"
   ],
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",

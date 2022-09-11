@@ -1,0 +1,7 @@
+*.srt
+*.png
+*.xcf
+*.jpg
+.editorconfig
+web-dev-server.config.mjs
+tsconfig.tsbuildinfo
