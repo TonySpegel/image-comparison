@@ -11,7 +11,7 @@ This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) reco
     - <kbd>←</kbd> / <kbd>→</kbd> move in small steps
     - <kbd>Shift + ←/→</kbd> for increased [steps](#attributes)
     - (<kbd>Home</kbd> / <kbd>Pos1</kbd>) / <kbd>End</kbd>, <kbd>⌘/Ctrl + ←/→ </kbd> to jump left or right
-  - Overlay: when in focus press <kbd>Enter</kbd> / <kbd>Space</kbd> 
+  - Overlay: when in focus press and hold <kbd>Enter</kbd> / <kbd>Space</kbd> 
 - [Custom events](#custom-events)
 - Support for [labels](#slots) and [custom prompts](#attributes)
 - Further customization through [CSS variables](#css-variables)
@@ -37,7 +37,10 @@ npm i image-comparison-component
 import 'image-comparison/image-comparison.js';
 ```
 
-### Slider
+### HTML
+The general structure always follows the scheme below. 
+The only thing that always needs to be adjusted is the "variant" attribute.
+Further customization through [attributes](#attributes).
 
 ```html
 <image-comparison variant="slider">
@@ -53,7 +56,18 @@ import 'image-comparison/image-comparison.js';
 </image-comparison>
 ```
 
+### Slider
+![slider variant](https://user-images.githubusercontent.com/1145514/189548328-34d20fb1-3e68-43b1-9d6e-774ffb0213d0.png)
+
+The "slider" variant lets you compare your images by dragging a slider. You can also just click somewhere or use its keyboard controls
+- <kbd>←</kbd> / <kbd>→</kbd> move in small steps
+- <kbd>Shift + ←/→</kbd> for increased [steps](#attributes)
+- (<kbd>Home</kbd> / <kbd>Pos1</kbd>) / <kbd>End</kbd>, <kbd>⌘/Ctrl + ←/→ </kbd> to jump left or right
+
 ### Overlay
+
+![overlay variant](https://user-images.githubusercontent.com/1145514/189547946-cd581f0a-1b84-4b32-b55d-99fd3a48a88f.png)
+
 The "overlay" variant can be used to compare images with a tap/press and hold action or pressing 
 the <kbd>Enter</kbd> / <kbd>Space</kbd> key when in focus. Its focus-ring offset can be adjusted using the
 `--overlay-focus-offset` variable.
