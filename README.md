@@ -63,7 +63,7 @@ Further customization through [attributes](#attributes).
 ### Slider
 ![slider variant](https://user-images.githubusercontent.com/1145514/189548328-34d20fb1-3e68-43b1-9d6e-774ffb0213d0.png)
 
-The "slider" variant lets you compare your images by dragging a slider. You can also just click somewhere or use its keyboard controls
+The "slider" variant lets you compare your images by dragging a slider. You can also just click or tap somewhere or use its keyboard controls
 - <kbd>←</kbd> / <kbd>→</kbd> move in small steps
 - <kbd>Shift + ←/→</kbd> for increased [steps](#attributes)
 - (<kbd>Home</kbd> / <kbd>Pos1</kbd>) / <kbd>End</kbd>, <kbd>⌘/Ctrl + ←/→ </kbd> to jump left or right
