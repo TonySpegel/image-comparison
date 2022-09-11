@@ -1,0 +1,22 @@
+﻿1
+00:00:00,000 --> 00:00:07,172
+Compare images in three ways: with a slider, an overlay or a split view
+
+2
+00:00:14,839 --> 00:00:17,349
+Keyboard controls
+
+3
+00:00:17,788 --> 00:00:27,262
+Slider: 
+←/→ small steps  
+shift + ←/→ larger steps
+Home/End, ⌘/Ctrl + ←/→ to jump left or right
+
+4
+00:00:27,733 --> 00:00:33,913
+Overlay: press/tap and hold enter or space
+
+5
+00:00:35,733 --> 00:00:47,749
+The slider and split view both support right to left languages
