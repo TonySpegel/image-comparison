@@ -3,6 +3,12 @@
 Compare two images using a slider, an overlay, or a side by side split view.  
 This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
 
+
+
+https://user-images.githubusercontent.com/1145514/189548478-f2fc7f66-e886-4d61-93e5-7e0281d32b17.mp4
+
+
+
 ## Features
 - three variants available: [slider](#slider), [overlay](#overlay), [split](#split)
 - Right-to-left language support (document's `dir` attribute set to `ltr`/`rtl`)  
