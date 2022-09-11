@@ -7,11 +7,15 @@ This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) reco
 - three variants available: [slider](#slider), [overlay](#overlay), [split](#split)
 - Right-to-left language support (document's `dir` attribute set to `ltr`/`rtl`)  
 - Keyboard controls: 
-  - Slider: <kbd>ArrowLeft</kbd> / <kbd>ArrowRight</kbd> (<kbd>Shift +</kbd> for increased [steps](#attributes)), <kbd>Home</kbd> (sometimes <kbd>Pos1</kbd>) / <kbd>End</kbd>.
-  - Overlay: when in focus press <kbd>Enter</kbd> / <kbd>Space</kbd> to compare
+  - Slider: 
+    - <kbd>←</kbd> / <kbd>→</kbd> move in small steps
+    - <kbd>Shift + ←/→</kbd> for increased [steps](#attributes)
+    - (<kbd>Home</kbd> / <kbd>Pos1</kbd>) / <kbd>End</kbd>, <kbd>⌘/Ctrl + ←/→ </kbd> to jump left or right
+  - Overlay: when in focus press <kbd>Enter</kbd> / <kbd>Space</kbd> 
 - [Custom events](#custom-events)
 - Support for [labels](#slots) and [custom prompts](#attributes)
 - Further customization through [CSS variables](#css-variables)
+- Runs ✨everywhere✨ because it's a webcomponent
 
 ## Installation
 
