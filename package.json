@@ -2,7 +2,7 @@
   "name": "image-comparison-component",
   "description": "Compare two images using a slider, an overlay, or a side by side view",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Tony Spegel",
   "keywords": [
     "image-comparison",

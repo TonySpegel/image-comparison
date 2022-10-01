@@ -140,7 +140,7 @@ export class ImageComparison extends LitElement {
   /**
    * Handle arrow, home & end keys and use more steps when shift is pressed
    */
-  private keyboardHandler(event: KeyboardEvent): void {
+  private keyboardSliderHandler(event: KeyboardEvent): void {
     const { code, key, ctrlKey, metaKey, shiftKey } = event;
     const { isRtl } = this;
     const isLtr = !isRtl;
@@ -148,15 +148,18 @@ export class ImageComparison extends LitElement {
 
     let position = this.sliderPosition;
 
+    // These keys would scroll the page when pressed
     if (code === 'Space' || key === 'Home' || key === 'End') {
       event.preventDefault();
     }
 
     if ((key === 'ArrowLeft' && isLtr) || (key === 'ArrowRight' && isRtl)) {
+      event.preventDefault(); // ← Firefox would highlight parts of the UI and labels w/o it
       position -= steps;
     }
 
     if ((key === 'ArrowRight' && isLtr) || (key === 'ArrowLeft' && isRtl)) {
+      event.preventDefault(); // same as above regarding Firefox
       position += steps;
     }
 
@@ -205,7 +208,8 @@ export class ImageComparison extends LitElement {
     this.slideCompareHandler = this.slideCompareHandler.bind(this);
     this.slideEndHandler = this.slideEndHandler.bind(this);
     this.readingDirectionHandler = this.readingDirectionHandler.bind(this);
-    this.keyboardHandler = this.keyboardHandler.bind(this);
+    this.keyboardSliderHandler = this.keyboardSliderHandler.bind(this);
+    this.keyboardOverlayHandler = this.keyboardOverlayHandler.bind(this);
   }
 
   /**
@@ -292,7 +296,7 @@ export class ImageComparison extends LitElement {
         </div>
 
         <button
-          @keydown=${this.keyboardHandler}
+          @keydown=${this.keyboardSliderHandler}
           @keyup=${() => this.setSlidingState(false)}
           @mousedown=${() => {
             this.setSlidingState(true);
