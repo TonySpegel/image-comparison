@@ -22,6 +22,17 @@ type Variants = 'overlay' | 'slider' | 'split';
 const clamp = (num: number, min: number, max: number): number =>
   Math.min(Math.max(num, min), max);
 
+/**
+ * @summary Compare two images using a slider, an overlay, or a side by side view
+ *
+ * @slot label-before - describe your first image, use <label>
+ * @slot label-after - describe your second image, use <label>
+ * @slot image-before - first image, remember using an alt-tag
+ * @slot image-after - second image, remember using an alt-tag
+ *
+ * @event drag-event - Emitted whenever the slider is moved
+ * @event press-event - Emitted whenever an overlay is pressed
+ */
 export class ImageComparison extends LitElement {
   static styles: CSSResultGroup = styles;
 

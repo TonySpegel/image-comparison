@@ -2,6 +2,9 @@
  * Copyright © 2022 Tony Spegel
  */
 
+/**
+ * @summary An event that is emitted whenever an overlay is pressed.
+ */
 export class PressEvent extends Event {
   static readonly eventName = 'press-event' as const;
 

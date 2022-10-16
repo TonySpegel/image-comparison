@@ -2,7 +2,7 @@
   "name": "image-comparison-component",
   "description": "Compare two images using a slider, an overlay, or a side by side view",
   "license": "MIT",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Tony Spegel",
   "keywords": [
     "image-comparison",
@@ -21,14 +21,16 @@
   "scripts": {
     "start": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\"",
     "build": "tsc",
-    "prepublish": "tsc",
+    "prepublish": "tsc && npm run create-ce-manifest",
     "lint": "eslint --ext .ts,.html . --ignore-path .gitignore && prettier \"**/*.ts\" --check --ignore-path .gitignore",
-    "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore && prettier \"**/*.ts\" --write --ignore-path .gitignore"
+    "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore && prettier \"**/*.ts\" --write --ignore-path .gitignore",
+    "create-ce-manifest": "cem analyze --litelement --globs \"src/**/*.ts\" --exclude \"src/**/*.styles.ts\""
   },
   "dependencies": {
-    "lit": "^2.3.1"
+    "lit": "^2.4.0"
   },
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.6.4",
     "@open-wc/eslint-config": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",

@@ -1,0 +1,523 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/DragEvent.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Copyright © 2022 Tony Spegel",
+          "name": "DragEvent",
+          "members": [
+            {
+              "kind": "field",
+              "name": "eventName",
+              "static": true,
+              "default": "'drag-event'",
+              "type": {
+                "text": "'drag-event'"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "targetElement",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "default": "targetElement"
+            }
+          ],
+          "superclass": {
+            "name": "Event",
+            "module": "src/DragEvent.ts"
+          },
+          "summary": "An event that is emitted whenever the slider is moved."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "DragEvent",
+          "declaration": {
+            "name": "DragEvent",
+            "module": "src/DragEvent.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/ImageComparison.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ImageComparison",
+          "slots": [
+            {
+              "description": "describe your first image, use <label>",
+              "name": "label-before"
+            },
+            {
+              "description": "describe your second image, use <label>",
+              "name": "label-after"
+            },
+            {
+              "description": "first image, remember using an alt-tag",
+              "name": "image-before"
+            },
+            {
+              "description": "second image, remember using an alt-tag",
+              "name": "image-after"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "Variants"
+              },
+              "privacy": "private",
+              "default": "'slider'",
+              "description": "Defines the look and behaviour of <image-comparison>",
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "overlayPrompt",
+              "type": {
+                "text": "string"
+              },
+              "privacy": "private",
+              "default": "'Tap and hold to compare'",
+              "attribute": "overlayPrompt"
+            },
+            {
+              "kind": "field",
+              "name": "sliderPrompt",
+              "type": {
+                "text": "string"
+              },
+              "privacy": "private",
+              "default": "'Move the slider to compare'",
+              "attribute": "sliderPrompt"
+            },
+            {
+              "kind": "field",
+              "name": "sliderPosition",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "50",
+              "attribute": "sliderPosition",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "sliderSteps",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "5",
+              "description": "Applied when shift is pressed with an arrow key (variant 'slider')",
+              "attribute": "sliderSteps"
+            },
+            {
+              "kind": "field",
+              "name": "imageContainer",
+              "type": {
+                "text": "HTMLDivElement"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "slidingActive",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "isRtl",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "pressed",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "readingDirectionObserver",
+              "type": {
+                "text": "MutationObserver"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setPressed",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "convertCursorToSliderPosition",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "TouchEvent | MouseEvent"
+                  }
+                }
+              ],
+              "description": "The relative position of a cursor (as in: a touch or mouse device)\nis converted into a clamped slider position value"
+            },
+            {
+              "kind": "method",
+              "name": "slideCompare",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "MouseEvent | TouchEvent"
+                  }
+                }
+              ],
+              "description": "Converts 'cursor' position and updates the UI accordingly"
+            },
+            {
+              "kind": "method",
+              "name": "slideCompareHandler",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "MouseEvent | TouchEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setSlidingState",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "slideEndHandler",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "readingDirectionHandler",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "mutations",
+                  "type": {
+                    "text": "MutationRecord[]"
+                  }
+                }
+              ],
+              "description": "Callback to handle any mutations made to the dir-attribute"
+            },
+            {
+              "kind": "method",
+              "name": "keyboardOverlayHandler",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "KeyboardEvent"
+                  }
+                }
+              ],
+              "description": "Used with overlay variant to compare images\nwith the 'Space' or 'Enter' key"
+            },
+            {
+              "kind": "method",
+              "name": "keyboardSliderHandler",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "KeyboardEvent"
+                  }
+                }
+              ],
+              "description": "Handle arrow, home & end keys and use more steps when shift is pressed"
+            },
+            {
+              "kind": "method",
+              "name": "addSliderEventListener",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Slider EventListener are added when 'variant' is set to 'slider'"
+            },
+            {
+              "kind": "method",
+              "name": "removeSliderEventListener",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Slider EventListener are removed when the element is removed from the DOM"
+            }
+          ],
+          "events": [
+            {
+              "description": "Emitted whenever the slider is moved",
+              "name": "drag-event"
+            },
+            {
+              "description": "Emitted whenever an overlay is pressed",
+              "name": "press-event"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "variant",
+              "type": {
+                "text": "Variants"
+              },
+              "default": "'slider'",
+              "description": "Defines the look and behaviour of <image-comparison>",
+              "fieldName": "variant"
+            },
+            {
+              "name": "overlayPrompt",
+              "type": {
+                "text": "string"
+              },
+              "default": "'Tap and hold to compare'",
+              "fieldName": "overlayPrompt"
+            },
+            {
+              "name": "sliderPrompt",
+              "type": {
+                "text": "string"
+              },
+              "default": "'Move the slider to compare'",
+              "fieldName": "sliderPrompt"
+            },
+            {
+              "name": "sliderPosition",
+              "type": {
+                "text": "number"
+              },
+              "default": "50",
+              "fieldName": "sliderPosition"
+            },
+            {
+              "name": "sliderSteps",
+              "type": {
+                "text": "number"
+              },
+              "default": "5",
+              "description": "Applied when shift is pressed with an arrow key (variant 'slider')",
+              "fieldName": "sliderSteps"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "summary": "Compare two images using a slider, an overlay, or a side by side view",
+          "tagName": "image-comparison",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ImageComparison",
+          "declaration": {
+            "name": "ImageComparison",
+            "module": "src/ImageComparison.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/PressEvent.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Copyright © 2022 Tony Spegel",
+          "name": "PressEvent",
+          "members": [
+            {
+              "kind": "field",
+              "name": "eventName",
+              "static": true,
+              "default": "'press-event'",
+              "type": {
+                "text": "'press-event'"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "targetElement",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "default": "targetElement"
+            },
+            {
+              "kind": "field",
+              "name": "pressed",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "pressed"
+            }
+          ],
+          "superclass": {
+            "name": "Event",
+            "module": "src/PressEvent.ts"
+          },
+          "summary": "An event that is emitted whenever an overlay is pressed."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PressEvent",
+          "declaration": {
+            "name": "PressEvent",
+            "module": "src/PressEvent.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/image-comparison.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "image-comparison",
+          "declaration": {
+            "name": "ImageComparison",
+            "module": "/src/ImageComparison.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ImageComparison",
+          "declaration": {
+            "name": "ImageComparison",
+            "module": "./ImageComparison.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "DragEvent",
+          "declaration": {
+            "name": "DragEvent",
+            "module": "./DragEvent.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "PressEvent",
+          "declaration": {
+            "name": "PressEvent",
+            "module": "./PressEvent.js"
+          }
+        }
+      ]
+    }
+  ]
+}
