@@ -107,36 +107,36 @@ export class ImageComparison extends LitElement {
     }
   }
 
-  private slideCompareHandler(event: MouseEvent | TouchEvent): void {
+  private slideCompareHandler = (event: MouseEvent | TouchEvent): void => {
     this.slideCompare(event);
-  }
+  };
 
   private setSlidingState(val: boolean): void {
     this.slidingActive = val;
   }
 
-  private slideEndHandler(): void {
+  private slideEndHandler = (): void => {
     this.setSlidingState(false);
     window.dispatchEvent(new DragEvent(this));
-  }
+  };
 
   /**
    * Callback to handle any mutations made to the dir-attribute
    */
-  private readingDirectionHandler(mutations: MutationRecord[]) {
+  private readingDirectionHandler = (mutations: MutationRecord[]) => {
     for (const mutation of mutations) {
       if (mutation.attributeName === 'dir') {
         const { dir } = mutation.target as Document;
         this.isRtl = dir === 'rtl';
       }
     }
-  }
+  };
 
   /**
    * Used with overlay variant to compare images
    * with the 'Space' or 'Enter' key
    */
-  private keyboardOverlayHandler(event: KeyboardEvent): void {
+  private keyboardOverlayHandler = (event: KeyboardEvent): void => {
     const { key, code } = event;
 
     if (code === 'Space') {
@@ -146,12 +146,12 @@ export class ImageComparison extends LitElement {
     if (code === 'Space' || key === 'Enter') {
       this.pressed = true;
     }
-  }
+  };
 
   /**
    * Handle arrow, home & end keys and use more steps when shift is pressed
    */
-  private keyboardSliderHandler(event: KeyboardEvent): void {
+  private keyboardSliderHandler = (event: KeyboardEvent): void => {
     const { code, key, ctrlKey, metaKey, shiftKey } = event;
     const { isRtl } = this;
     const isLtr = !isRtl;
@@ -184,8 +184,11 @@ export class ImageComparison extends LitElement {
       position = 100;
     }
 
+    // Center thumb position
+    if (key === 'Enter') position = 50;
+
     this.sliderPosition = clamp(position, 0, 100);
-  }
+  };
 
   /**
    * Slider EventListener are added when 'variant' is set to 'slider'
@@ -211,16 +214,6 @@ export class ImageComparison extends LitElement {
     // End sliding
     window.removeEventListener('mouseup', this.slideEndHandler);
     window.removeEventListener('touchend', this.slideEndHandler);
-  }
-
-  constructor() {
-    super();
-
-    this.slideCompareHandler = this.slideCompareHandler.bind(this);
-    this.slideEndHandler = this.slideEndHandler.bind(this);
-    this.readingDirectionHandler = this.readingDirectionHandler.bind(this);
-    this.keyboardSliderHandler = this.keyboardSliderHandler.bind(this);
-    this.keyboardOverlayHandler = this.keyboardOverlayHandler.bind(this);
   }
 
   /**
