@@ -5,3 +5,4 @@
 .editorconfig
 web-dev-server.config.mjs
 tsconfig.tsbuildinfo
+.vscode/settings.json
