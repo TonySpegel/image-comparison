@@ -16,8 +16,7 @@
     "rootDir": "./",
     "declaration": true,
     "incremental": true,
-    "forceConsistentCasingInFileNames": true,
-    "noUnusedLocals": true
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["**/*.ts"]
 }

@@ -2,7 +2,7 @@
   "name": "image-comparison-component",
   "description": "Compare two images using a slider, an overlay, or a side by side view",
   "license": "MIT",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Tony Spegel",
   "keywords": [
     "image-comparison",
@@ -27,23 +27,23 @@
     "create-ce-manifest": "cem analyze --litelement --globs \"src/**/*.ts\" --exclude \"src/**/*.styles.ts\""
   },
   "dependencies": {
-    "lit": "^2.4.0"
+    "lit": "^2.7.2"
   },
   "devDependencies": {
-    "@custom-elements-manifest/analyzer": "^0.6.4",
-    "@open-wc/eslint-config": "^4.3.0",
-    "@typescript-eslint/eslint-plugin": "^4.29.2",
-    "@typescript-eslint/parser": "^4.29.2",
-    "@web/dev-server": "^0.1.21",
-    "concurrently": "^5.3.0",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
+    "@custom-elements-manifest/analyzer": "^0.8.0",
+    "@open-wc/eslint-config": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "@web/dev-server": "^0.1.38",
+    "concurrently": "^8.0.1",
+    "eslint": "^8.38.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-no-constructor-bind": "^2.0.4",
-    "husky": "^4.3.8",
-    "lint-staged": "^10.5.4",
-    "prettier": "^2.3.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.1",
+    "prettier": "^2.8.7",
     "tslib": "^2.3.1",
-    "typescript": "^4.3.5"
+    "typescript": "^4.8.4"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
@@ -58,8 +58,9 @@
     "rules": {
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
-        "error"
+        "off"
       ],
+      "default-param-last": "off",
       "import/no-unresolved": "off",
       "import/extensions": [
         "error",

@@ -8,13 +8,14 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Copyright © 2022 Tony Spegel",
+          "description": "Copyright © 2023 Tony Spegel",
           "name": "DragEvent",
           "members": [
             {
               "kind": "field",
               "name": "eventName",
               "static": true,
+              "readonly": true,
               "default": "'drag-event'",
               "type": {
                 "text": "'drag-event'"
@@ -207,41 +208,15 @@
               "description": "The relative position of a cursor (as in: a touch or mouse device)\nis converted into a clamped slider position value"
             },
             {
-              "kind": "method",
+              "kind": "field",
               "name": "slideCompare",
               "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "MouseEvent | TouchEvent"
-                  }
-                }
-              ],
               "description": "Converts 'cursor' position and updates the UI accordingly"
             },
             {
-              "kind": "method",
+              "kind": "field",
               "name": "slideCompareHandler",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "MouseEvent | TouchEvent"
-                  }
-                }
-              ]
+              "privacy": "private"
             },
             {
               "kind": "method",
@@ -262,65 +237,26 @@
               ]
             },
             {
-              "kind": "method",
+              "kind": "field",
               "name": "slideEndHandler",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
+              "privacy": "private"
             },
             {
-              "kind": "method",
+              "kind": "field",
               "name": "readingDirectionHandler",
               "privacy": "private",
-              "parameters": [
-                {
-                  "name": "mutations",
-                  "type": {
-                    "text": "MutationRecord[]"
-                  }
-                }
-              ],
               "description": "Callback to handle any mutations made to the dir-attribute"
             },
             {
-              "kind": "method",
+              "kind": "field",
               "name": "keyboardOverlayHandler",
               "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "KeyboardEvent"
-                  }
-                }
-              ],
               "description": "Used with overlay variant to compare images\nwith the 'Space' or 'Enter' key"
             },
             {
-              "kind": "method",
+              "kind": "field",
               "name": "keyboardSliderHandler",
               "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "KeyboardEvent"
-                  }
-                }
-              ],
               "description": "Handle arrow, home & end keys and use more steps when shift is pressed"
             },
             {
@@ -426,13 +362,14 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Copyright © 2022 Tony Spegel",
+          "description": "Copyright © 2023 Tony Spegel",
           "name": "PressEvent",
           "members": [
             {
               "kind": "field",
               "name": "eventName",
               "static": true,
+              "readonly": true,
               "default": "'press-event'",
               "type": {
                 "text": "'press-event'"

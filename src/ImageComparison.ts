@@ -2,7 +2,7 @@
  * <image-comparison>
  * Compare two images using a slider, an overlay, or a side by side view
  *
- * Copyright © 2022 Tony Spegel
+ * Copyright © 2023 Tony Spegel
  */
 
 import type { CSSResultGroup } from 'lit';
@@ -21,6 +21,18 @@ type Variants = 'overlay' | 'slider' | 'split';
  */
 const clamp = (num: number, min: number, max: number): number =>
   Math.min(Math.max(num, min), max);
+
+/**
+ * The MouseEvent.button read-only property indicates
+ * which button was pressed on the mouse to trigger the event.
+ */
+const MouseActions = {
+  Main: 0, // the left button
+  Auxiliary: 1, // the wheel or the middle button
+  Secondary: 2, // the right button
+  Fourth: 3, // typically the Browser Back button
+  Fifth: 4, // typically the Browser Forward button
+} as const;
 
 /**
  * @summary Compare two images using a slider, an overlay, or a side by side view
@@ -98,14 +110,14 @@ export class ImageComparison extends LitElement {
   /**
    * Converts 'cursor' position and updates the UI accordingly
    */
-  private slideCompare(event: MouseEvent | TouchEvent): void {
+  private slideCompare = (event: MouseEvent | TouchEvent): void => {
     if (this.slidingActive) {
       let pos = this.convertCursorToSliderPosition(event);
       pos = this.isRtl ? 100 - pos : pos;
 
       this.sliderPosition = pos;
     }
-  }
+  };
 
   private slideCompareHandler = (event: MouseEvent | TouchEvent): void => {
     this.slideCompare(event);
@@ -271,12 +283,23 @@ export class ImageComparison extends LitElement {
      * ┌───┬─────┐
      * │  <│>    │
      * └───┴─────┘
+     *
+     * The button's style attribute is special as it uses a template literal
+     * here to avoid a bug some minification tools seem to have. That bug
+     * seems to drop css units such as the '%' here when used as a plain string.
      */
     const sliderTemplate = html`
       <div
         @mousedown=${(e: MouseEvent) => {
-          this.setSlidingState(true);
-          this.slideCompareHandler(e);
+          const { button } = e;
+          // The left or the wheel/middle button
+          if (
+            button === MouseActions.Main ||
+            button === MouseActions.Auxiliary
+          ) {
+            this.setSlidingState(true);
+            this.slideCompareHandler(e);
+          }
         }}
         id="image-container"
         class=${classMap({
@@ -298,7 +321,6 @@ export class ImageComparison extends LitElement {
         >
           <slot name="image-after"></slot>
         </div>
-
         <button
           @keydown=${this.keyboardSliderHandler}
           @keyup=${() => this.setSlidingState(false)}
@@ -314,9 +336,9 @@ export class ImageComparison extends LitElement {
           @dblclick=${() => {
             this.sliderPosition = 50;
           }}
-          style="left: ${this.isRtl
-            ? -this.sliderPosition
-            : this.sliderPosition}%"
+          style="${`left: ${
+            this.isRtl ? -this.sliderPosition : this.sliderPosition
+          }%`}"
           title=${this.sliderPrompt}
           aria-controls="image-container"
           aria-valuemin="0"

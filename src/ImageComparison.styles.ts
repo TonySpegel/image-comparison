@@ -4,7 +4,7 @@
  *
  * Styles ✨
  *
- * Copyright © 2022 Tony Spegel
+ * Copyright © 2023 Tony Spegel
  */
 
 import { css } from 'lit';
@@ -61,6 +61,10 @@ export default css`
 
     background-color: var(--label-background-color);
     color: var(--label-color);
+  }
+
+  ::slotted([slot^='image-']) {
+    max-inline-size: 100%;
   }
 
   :host(:is([variant='slider'], [variant='overlay']))
